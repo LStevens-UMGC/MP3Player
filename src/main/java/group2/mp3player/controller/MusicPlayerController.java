@@ -284,7 +284,7 @@ public class MusicPlayerController {
             alert.setContentText("This action will clear all playlists.");
 
             ButtonType yesButton = new ButtonType("Yes");
-            ButtonType noButton = new ButtonTypegit("No", ButtonType.CANCEL.getButtonData());
+            ButtonType noButton = new ButtonType("No", ButtonType.CANCEL.getButtonData());
             alert.getButtonTypes().setAll(yesButton, noButton);
 
             Optional<ButtonType> result = alert.showAndWait();
