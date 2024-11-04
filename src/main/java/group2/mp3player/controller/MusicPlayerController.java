@@ -18,6 +18,7 @@ import javafx.util.Duration;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class MusicPlayerController {
     private final ObservableList<Song> songHistory = FXCollections.observableArrayList();
@@ -54,6 +55,8 @@ public class MusicPlayerController {
     private Button nextButton;
     @FXML
     private Button prevButton;
+    @FXML
+    private Button clearPlaylistButton;
     @FXML
     private Slider volumeSlider;
 
@@ -269,6 +272,35 @@ public class MusicPlayerController {
         }
     }
 
+    // Clear the playlists and Listview
+    @FXML
+    private void handleClearAllPlayLists(){
+        if(playlists.isEmpty()) {
+            System.out.println("No playlist found.");
+        }else{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Clear all playlists");
+            alert.setHeaderText("Are you sure you want to clear all playlists?");
+            alert.setContentText("This action will clear all playlists.");
+
+            ButtonType yesButton = new ButtonType("Yes");
+            ButtonType noButton = new ButtonType("No", ButtonType.CANCEL.getButtonData());
+            alert.getButtonTypes().setAll(yesButton, noButton);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.isPresent() && result.get() == yesButton){
+                playlists.clear();
+                playlistListView.getItems().clear();
+                JsonHandler.clearPlaylistsFromJson("playlists.json");
+                System.out.println("Playlists cleared.");
+            }else{
+                System.out.println("Cancelled. Playlists not cleared");
+            }
+
+
+        }
+
+    }
 
     private void setupMediaPlayerListeners(MediaPlayer mediaPlayer) {
         mediaPlayer.setOnReady(() -> {

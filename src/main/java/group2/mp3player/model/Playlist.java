@@ -27,6 +27,8 @@ public class Playlist {
         songs.add(song);
     }
 
+    public void removeSong() {songs.clear(); }
+
     public void setSongs(List<Song> songList) {
         this.songs.clear();
         this.songs.addAll(songList);
