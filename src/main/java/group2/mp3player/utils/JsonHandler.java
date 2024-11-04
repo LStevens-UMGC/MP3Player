@@ -54,4 +54,17 @@ public class JsonHandler {
             return null;
         }
     }
+
+    public static void clearPlaylistsFromJson(String filePath) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            Type listType = new TypeToken<List<Playlist>>() {
+            }.getType();
+            new Gson().toJson(List.of(), listType, writer);
+        }catch(IOException e) {
+            e.printStackTrace();
+            System.out.println("Error clearing playlists.");
+        }
+    }
+
+
 }
