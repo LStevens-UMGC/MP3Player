@@ -1,6 +1,8 @@
 package group2.mp3player.controller;
 
+import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -72,6 +75,8 @@ public class MusicPlayerController {
 	private Button prevButton;
 	@FXML
 	private Button clearPlaylistButton;
+	@FXML
+	private TextField searchTextField;
 	@FXML
 	private Slider volumeSlider;
 
@@ -140,6 +145,8 @@ public class MusicPlayerController {
 				}
 			}
 		});
+
+		searchTextField.textProperty().addListener((obs, oldVal, newVal) -> {searchUpdatePlaylistView(newVal);});
 
 		// Handle user input on the progress bar (seeking)
 		progressBar.setOnMousePressed(event -> {
@@ -364,6 +371,23 @@ public class MusicPlayerController {
 
 		}
 
+	}
+	//Search playlist functionality
+	private void searchUpdatePlaylistView(String playlistName) {
+		List<String> playlistNames = new ArrayList<>();
+		if(playlistName == null || playlistName.isEmpty()) {
+
+			for(Playlist playlist : playlists) {
+				playlistNames.add(playlist.getName());
+			}
+		}else {
+			for (Playlist playlist : playlists) {
+				if (playlist.getName().toLowerCase().contains(playlistName.toLowerCase())) {
+					playlistNames.add(playlist.getName());
+				}
+			}
+		}
+			playlistListView.setItems(FXCollections.observableArrayList(playlistNames));
 	}
 
 	private void setupMediaPlayerListeners(MediaPlayer mediaPlayer) {
