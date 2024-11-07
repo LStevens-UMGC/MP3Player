@@ -28,6 +28,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import java.util.prefs.Preferences;
+
 
 public class MusicPlayerController {
 	private final ObservableList<Song> songHistory = FXCollections.observableArrayList();
@@ -35,6 +37,8 @@ public class MusicPlayerController {
 	private final String SONG_HISTORY_FILE = "songHistory.json";
 	private MediaPlayer mediaPlayer;
 	private Playlist currentPlaylist;
+	private final Preferences prefs = Preferences.userNodeForPackage(MusicPlayerController.class);
+	private static final String VOLUME_PREF_KEY = "volume";
 
 	@FXML
 	private ListView<String> playlistListView;
@@ -73,6 +77,19 @@ public class MusicPlayerController {
 
 	@FXML
 	public void initialize() {
+		// Load the last saved volume level or set to 50% if no value is saved
+		double savedVolume = prefs.getDouble(VOLUME_PREF_KEY, 50.0);
+		volumeSlider.setValue(savedVolume);
+
+		// Set up volume control and save changes to Preferences
+		volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+			if (mediaPlayer != null) {
+				mediaPlayer.setVolume(newVal.doubleValue() / 100);
+			}
+			// Save the current volume to preferences whenever it changes
+			prefs.putDouble(VOLUME_PREF_KEY, newVal.doubleValue());
+		});
+
 		// Set up the column to display song titles
 		songNameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 		artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
