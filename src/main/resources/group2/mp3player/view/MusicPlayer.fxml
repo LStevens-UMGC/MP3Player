@@ -40,7 +40,7 @@
             </HBox>
             <Button fx:id="addSongToPlaylistButton" text="Add Song to Playlist" onAction="#handleAddSongToPlaylist"/>
             <Button fx:id="clearAllPlaylistsButton" text="Clear All Playlists" onAction="#handleClearAllPlayLists"/>
-            <Button fx:id="clearSongHistory"        text="Clear Song History"  onAction="#handleClearSongHistory"/> 
+            <Button fx:id="clearSongHistory"        text="Clear Song History"  onAction="#handleClearSongHistory"/>
         </VBox>
 
         <!-- Song list and progress -->
