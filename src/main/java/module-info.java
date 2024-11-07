@@ -10,6 +10,7 @@ module group2.mp3player {
     requires org.kordamp.bootstrapfx.core;
     requires com.google.gson;
     requires jaudiotagger;
+    requires java.desktop;
     requires java.prefs;
 //    requires eu.hansolo.tilesfx;
 
