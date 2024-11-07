@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import java.io.File;
 import java.util.Optional;
+import java.util.ArrayList;
 
 public class MusicPlayerController {
 	private final MusicPlayer model = MusicPlayer.getInstance();
@@ -68,6 +69,9 @@ public class MusicPlayerController {
 	private Button clearPlaylistButton;
 
 	@FXML
+	private TextField searchTextField;
+
+	@FXML
 	private Slider volumeSlider;
 
 	@FXML
@@ -115,6 +119,8 @@ public class MusicPlayerController {
 				}
 			}
 		});
+
+		searchTextField.textProperty().addListener((obs, oldVal, newVal) -> {searchUpdatePlaylistView(newVal);});
 
 		setupProgressBarSeekHandler();
 	}
@@ -232,6 +238,27 @@ public class MusicPlayerController {
 
 		songTableView.setItems(model.loadPlaylist(playlistName));;
 
+	}
+
+	/*
+	TODO HERE
+	 */
+	//Search playlist functionality
+	private void searchUpdatePlaylistView(String playlistName) {
+//		List<String> playlistNames = new ArrayList<>();
+//		if(playlistName == null || playlistName.isEmpty()) {
+//
+//			for(Playlist playlist : playlists) {
+//				playlistNames.add(playlist.getName());
+//			}
+//		}else {
+//			for (Playlist playlist : playlists) {
+//				if (playlist.getName().toLowerCase().contains(playlistName.toLowerCase())) {
+//					playlistNames.add(playlist.getName());
+//				}
+//			}
+//		}
+		playlistListView.setItems(FXCollections.observableArrayList(model.searchUpdatePlaylistView(playlistName)));
 	}
 
 	private void setupCurrentTimeHandler() {

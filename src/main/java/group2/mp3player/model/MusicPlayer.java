@@ -10,6 +10,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -125,4 +126,27 @@ public class MusicPlayer {
         playlists.add(newPlaylist);
         JsonHandler.savePlaylistsToJson(playlists, "playlists.json");
     }
+
+    /*
+    TODO rename?
+     */
+    //Search playlist functionality
+    public List<String> searchUpdatePlaylistView(String playlistName) {
+        List<String> playlistNames = new ArrayList<>();
+        if(playlistName == null || playlistName.isEmpty()) {
+
+            for(Playlist playlist : playlists) {
+                playlistNames.add(playlist.getName());
+            }
+        }else {
+            for (Playlist playlist : playlists) {
+                if (playlist.getName().toLowerCase().contains(playlistName.toLowerCase())) {
+                    playlistNames.add(playlist.getName());
+                }
+            }
+        }
+
+        return playlistNames;
+    }
 }
+
