@@ -40,9 +40,9 @@ public class Playlist<PlayList> {
     private List<Playlist> searchPlaylists(List<Playlist> playlists, String name) {
         List<Playlist> result = new ArrayList<>();
         for (Playlist playlist : playlists) {
-             if(playlist.getName().toLowerCase().contains(name.toLowerCase())) {
-                 result.add(playlist);
-             }
+            if(playlist.getName().toLowerCase().contains(name.toLowerCase())) {
+                result.add(playlist);
+            }
         }
         return result;
     }

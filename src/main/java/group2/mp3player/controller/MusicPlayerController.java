@@ -1,118 +1,99 @@
 package group2.mp3player.controller;
-
-import java.awt.*;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import group2.mp3player.model.Playlist;
+import group2.mp3player.model.MusicPlayer;
 import group2.mp3player.model.Song;
-import group2.mp3player.utils.JsonHandler;
 import group2.mp3player.utils.MetaDataExtractor;
-import javafx.beans.binding.Bindings;
+import group2.mp3player.model.Playlist;
+import group2.mp3player.utils.JsonHandler;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-import java.util.prefs.Preferences;
-
+import java.io.File;
+import java.util.Optional;
+import java.util.ArrayList;
 
 public class MusicPlayerController {
-	private final ObservableList<Song> songHistory = FXCollections.observableArrayList();
-	private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
-	private final String SONG_HISTORY_FILE = "songHistory.json";
-	private MediaPlayer mediaPlayer;
-	private Playlist currentPlaylist;
-	private final Preferences prefs = Preferences.userNodeForPackage(MusicPlayerController.class);
-	private static final String VOLUME_PREF_KEY = "volume";
+	private final MusicPlayer model = MusicPlayer.getInstance();
+	private static final String PLAYLISTS_FILE = "playlists.json";
 
 	@FXML
 	private ListView<String> playlistListView;
+
 	@FXML
 	private TableView<Song> songTableView;
+
 	@FXML
 	private TableColumn<Song, String> songNameColumn;
+
 	@FXML
 	private TableColumn<Song, String> artistColumn;
+
 	@FXML
 	private TableColumn<Song, String> albumColumn;
+
 	@FXML
 	private TableColumn<Song, String> yearColumn;
+
 	@FXML
 	private Slider progressBar;
+
 	@FXML
 	private Label playlistLabel;
+
 	@FXML
 	private Label songTitleLabel;
+
 	@FXML
 	private Label currentTimeLabel;
+
 	@FXML
 	private Label totalTimeLabel;
+
 	@FXML
 	private Button playPauseButton;
+
 	@FXML
 	private Button showHistoryButton;
+
 	@FXML
 	private Button nextButton;
+
 	@FXML
 	private Button prevButton;
+
 	@FXML
 	private Button clearPlaylistButton;
+
 	@FXML
 	private TextField searchTextField;
+
 	@FXML
 	private Slider volumeSlider;
 
 	@FXML
 	public void initialize() {
-		// Load the last saved volume level or set to 50% if no value is saved
-		double savedVolume = prefs.getDouble(VOLUME_PREF_KEY, 50.0);
-		volumeSlider.setValue(savedVolume);
-
-		// Set up volume control and save changes to Preferences
-		volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-			if (mediaPlayer != null) {
-				mediaPlayer.setVolume(newVal.doubleValue() / 100);
-			}
-			// Save the current volume to preferences whenever it changes
-			prefs.putDouble(VOLUME_PREF_KEY, newVal.doubleValue());
-		});
-
-		// Set up the column to display song titles
+		// Set up the columns to display song details
 		songNameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 		artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
 		albumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
 		yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
 
-		songTableView.setItems(songHistory);
+		songTableView.setItems(model.getSongHistory());
 
-		// Load the song history from the JSON file on startup
-		songHistory.addAll(Objects.requireNonNull(JsonHandler.loadFromJson(SONG_HISTORY_FILE)));
-
-		// Add a double-click event handler to play songs from the history
+		// Initialize model
+		model.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
+		model.initialize();
 
 		songTableView.setOnMouseClicked(event -> {
 			if (event.getClickCount() == 2) {
 				Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
 				if (selectedSong != null) {
-					playSongFromHistory(selectedSong);
+					model.playSongFromHistory(selectedSong);
+					setupCurrentTimeHandler();
 				}
 			}
 		});
@@ -127,17 +108,10 @@ public class MusicPlayerController {
 			}
 		});
 
-		// Load playlists from JSON
-		List<Playlist> loadedPlaylists = JsonHandler.loadPlaylistsFromJson("playlists.json");
-		if (loadedPlaylists != null) {
-			playlists.addAll(loadedPlaylists);
-			playlistListView.getItems().addAll(playlists.stream().map(Playlist::getName).toList());
-		}
+		model.loadPlaylists(PLAYLISTS_FILE, playlistListView.getItems());
 
-		// Add a click handler for selecting a playlist.
-		// Added a song title label to display the selected playlist when it is clicked
 		playlistListView.setOnMouseClicked(event -> {
-			if (event.getClickCount() == 1) {
+			if (event.getClickCount() == 2) {
 				String selectedPlaylistName = playlistListView.getSelectionModel().getSelectedItem();
 				playlistLabel.setText("Viewing : " + selectedPlaylistName);
 				if (selectedPlaylistName != null) {
@@ -148,58 +122,42 @@ public class MusicPlayerController {
 
 		searchTextField.textProperty().addListener((obs, oldVal, newVal) -> {searchUpdatePlaylistView(newVal);});
 
-		// Handle user input on the progress bar (seeking)
-		progressBar.setOnMousePressed(event -> {
-			if (mediaPlayer != null) {
-				double value = progressBar.getValue();
-				mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(value / 100));
-			}
-		});
+		setupProgressBarSeekHandler();
+	}
 
-		progressBar.setOnMouseDragged(event -> {
-			if (mediaPlayer != null) {
-				double value = progressBar.getValue();
-				mediaPlayer.seek(mediaPlayer.getTotalDuration().multiply(value / 100));
+	@FXML
+	private void handleAddSongToPlaylist() {
+		Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
+		String selectedPlaylistName = playlistListView.getSelectionModel().getSelectedItem();
+		if ((selectedSong != null) && (selectedPlaylistName != null)) {
+			Playlist selectedPlaylist = model.getPlaylists().stream()
+					.filter(playlist -> playlist.getName().equals(selectedPlaylistName)).findFirst().orElse(null);
+			if (selectedPlaylist != null) {
+				selectedPlaylist.addSong(selectedSong);
+				JsonHandler.savePlaylistsToJson(model.getPlaylists(), "playlists.json");
+				System.out.println("Song added to playlist and saved to JSON.");
+			} else {
+				System.out.println("Selected playlist not found.");
 			}
-		});
-
-		// Set up volume control
-		volumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-			if (mediaPlayer != null) {
-				mediaPlayer.setVolume(newVal.doubleValue() / 100);
-			}
-		});
+		} else {
+			System.out.println("No song or playlist selected.");
+		}
 	}
 
 	@FXML
 	private void handleOpen() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 Files", "*.mp3"));
-
 		File selectedFile = fileChooser.showOpenDialog(null);
-
 		if (selectedFile != null) {
 			try {
 				// Extract metadata
 				Song song = MetaDataExtractor.extractMetadata(selectedFile);
-
 				// Add the song with detailed metadata
-				songHistory.add(song);
-				JsonHandler.saveToJson(songHistory, SONG_HISTORY_FILE);
-
+				model.getSongHistory().add(song);
+				JsonHandler.saveToJson(model.getSongHistory(), model.getSongHistoryFile());
 				// Display metadata in labels (optional)
 				songTitleLabel.setText("Title: " + song.getTitle());
-
-				// You can create more labels for artist, album, etc., and display them
-				// similarly
-
-				Media media = new Media(selectedFile.toURI().toString());
-				mediaPlayer = new MediaPlayer(media);
-				setupMediaPlayerListeners(mediaPlayer);
-				// Commented out for now, attempting to open new song while song is playing
-				// causes both songs to play.
-				// mediaPlayer.play();
-
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("Error loading the media file.");
@@ -211,217 +169,142 @@ public class MusicPlayerController {
 
 	@FXML
 	private void handlePlayPause() {
-		if (mediaPlayer == null) {
-			Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
-			if (selectedSong != null) {
-				Media media = new Media(selectedSong.getFilePath());
-				// Made song title update. Song title would not update if song is clicked on
-				// once, and play button is used.
-				songTitleLabel.setText("Playing: " + selectedSong.getTitle());
-				mediaPlayer = new MediaPlayer(media);
-				mediaPlayer.setOnReady(() -> totalTimeLabel.setText(formatTime(media.getDuration())));
-				mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> progressBar
-						.setValue((newTime.toSeconds() / media.getDuration().toSeconds()) * 100));
-				mediaPlayer.play();
-				playPauseButton.setText("Pause");
-			}
-		} else if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-			mediaPlayer.pause();
-			playPauseButton.setText("Play");
-		} else {
-			mediaPlayer.play();
-
-			playPauseButton.setText("Pause");
-		}
-	}
-
-	private String formatTime(Duration duration) {
-		int minutes = (int) duration.toMinutes();
-		int seconds = (int) (duration.toSeconds() % 60);
-		return String.format("%d:%02d", minutes, seconds);
-	}
-
-	private void playSongFromHistory(Song song) {
-		if (mediaPlayer != null) {
-			mediaPlayer.stop(); // Stop current playback if a song is already playing
-		}
-
-		try {
-
-			Media media = new Media(song.getFilePath());
-			// Attempting to add functionality, where you can clear songhistory, and re-add
-			// it by playing songs though
-			// the playlist. Currently a concurrentmodification exception if you re-add a
-			// song with a same name.
-
-			// if (songHistory.isEmpty()) {
-			// songHistory.add(song);
-			// JsonHandler.saveToJson(songHistory, SONG_HISTORY_FILE);
-			// } else
-			// for (Song s : songHistory) {
-			// if (song.getTitle() == s.getTitle()) {
-			// System.out.println("Duplicate Song Detected");
-			// } else {
-			// songHistory.add(song);
-			// JsonHandler.saveToJson(songHistory, SONG_HISTORY_FILE);
-			// System.out.println("Song not present, adding to song history.");
-			// }
-
-			// }
-
-			mediaPlayer = new MediaPlayer(media);
-			setupMediaPlayerListeners(mediaPlayer); // Set up listeners for new mediaPlayer
-
-			songTitleLabel.setText("Playing: " + song.getTitle());
-			mediaPlayer.play();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error loading the media file.");
-		}
-	}
-
-	// Added label to show song history is being viewed
-	@FXML
-	private void handleShowSongHistory() {
-		songTableView.setItems(songHistory);
-		playlistLabel.setText("Viewing : Song History");
-	}
-
-	// Method to create a new playlist
-	@FXML
-	private void handleCreatePlaylist() {
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Create Playlist");
-		dialog.setHeaderText("Enter the name of the new playlist:");
-		dialog.setContentText("Playlist name:");
-
-		dialog.showAndWait().ifPresent(name -> {
-			Playlist newPlaylist = new Playlist(name);
-			playlists.add(newPlaylist);
-			playlistListView.getItems().add(name);
-			JsonHandler.savePlaylistsToJson(playlists, "playlists.json");
-		});
-	}
-
-	// Load songs from a selected playlist
-	private void loadPlaylist(String playlistName) {
-		currentPlaylist = playlists.stream().filter(playlist -> playlist.getName().equals(playlistName)).findFirst()
-				.orElse(null);
-
-		if (currentPlaylist != null) {
-			songTableView.setItems(currentPlaylist.getSongs());
-		}
-	}
-
-	@FXML
-	private void handleAddSongToPlaylist() {
 		Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
-		String selectedPlaylistName = playlistListView.getSelectionModel().getSelectedItem();
-
-		if ((selectedSong != null) && (selectedPlaylistName != null)) {
-			Playlist selectedPlaylist = playlists.stream()
-					.filter(playlist -> playlist.getName().equals(selectedPlaylistName)).findFirst().orElse(null);
-
-			if (selectedPlaylist != null) {
-				selectedPlaylist.addSong(selectedSong);
-				JsonHandler.savePlaylistsToJson(playlists, "playlists.json");
-				System.out.println("Song added to playlist and saved to JSON.");
-			} else {
-				System.out.println("Selected playlist not found.");
-			}
-		} else {
-			System.out.println("No song or playlist selected.");
-		}
+		model.handlePlayPause(selectedSong, playPauseButton);
 	}
 
-	// Clears the song history view, araylist, and jsonfile. Needs additional GUI
-	@FXML
-	private void handleClearSongHistory() {
-
-		songTableView.getItems().clear();
-		songHistory.clear();
-		JsonHandler.clearPlaylistsFromJson("songHistory.json");
-	}
-
-	// Clear the playlists and Listview
 	@FXML
 	private void handleClearAllPlayLists() {
-		if (playlists.isEmpty()) {
+		if (model.getPlaylists().isEmpty()) {
 			System.out.println("No playlist found.");
 		} else {
 			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 			alert.setTitle("Clear all playlists");
 			alert.setHeaderText("Are you sure you want to clear all playlists?");
 			alert.setContentText("This action will clear all playlists.");
-
 			ButtonType yesButton = new ButtonType("Yes");
 			ButtonType noButton = new ButtonType("No", ButtonType.CANCEL.getButtonData());
 			alert.getButtonTypes().setAll(yesButton, noButton);
-
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.isPresent() && (result.get() == yesButton)) {
-				playlists.clear();
+				model.getPlaylists().clear();
 				playlistListView.getItems().clear();
 				JsonHandler.clearPlaylistsFromJson("playlists.json");
 				System.out.println("Playlists cleared.");
 			} else {
 				System.out.println("Cancelled. Playlists not cleared");
 			}
-
 		}
+	}
+
+	@FXML
+	private void handleClearSongHistory() {
+		songTableView.getItems().clear();
+		model.getSongHistory().clear();
+		JsonHandler.clearPlaylistsFromJson("songHistory.json");
+	}
+
+	@FXML
+	private void handleCreatePlaylist() {
+		TextInputDialog dialog = new TextInputDialog();
+		dialog.setTitle("Create Playlist");
+		dialog.setHeaderText("Enter the name of the new playlist:");
+		dialog.setContentText("Playlist name:");
+		dialog.showAndWait().ifPresent(name -> {
+			model.createPlaylist(name);
+			playlistListView.getItems().add(name);
+		});
+	}
+
+	@FXML
+	private void handleShowSongHistory() {
+		songTableView.setItems(model.getSongHistory());
+		playlistLabel.setText("Viewing : Song History");
+	}
+
+	private void setupProgressBarSeekHandler() {
+		EventHandler<MouseEvent> seekHandler = event -> {
+			if (model.getMediaPlayer() != null) {
+				double value = progressBar.getValue();
+				model.getMediaPlayer().seek(model.getMediaPlayer().getTotalDuration().multiply(value / 100));
+			}
+		};
+		progressBar.setOnMousePressed(seekHandler);
+		progressBar.setOnMouseDragged(seekHandler);
+	}
+
+	// Load songs from a selected playlist
+	private void loadPlaylist(String playlistName) {
+
+		songTableView.setItems(model.loadPlaylist(playlistName));;
 
 	}
+
+	/*
+	TODO HERE
+	 */
 	//Search playlist functionality
 	private void searchUpdatePlaylistView(String playlistName) {
-		List<String> playlistNames = new ArrayList<>();
-		if(playlistName == null || playlistName.isEmpty()) {
-
-			for(Playlist playlist : playlists) {
-				playlistNames.add(playlist.getName());
-			}
-		}else {
-			for (Playlist playlist : playlists) {
-				if (playlist.getName().toLowerCase().contains(playlistName.toLowerCase())) {
-					playlistNames.add(playlist.getName());
-				}
-			}
-		}
-			playlistListView.setItems(FXCollections.observableArrayList(playlistNames));
+//		List<String> playlistNames = new ArrayList<>();
+//		if(playlistName == null || playlistName.isEmpty()) {
+//
+//			for(Playlist playlist : playlists) {
+//				playlistNames.add(playlist.getName());
+//			}
+//		}else {
+//			for (Playlist playlist : playlists) {
+//				if (playlist.getName().toLowerCase().contains(playlistName.toLowerCase())) {
+//					playlistNames.add(playlist.getName());
+//				}
+//			}
+//		}
+		playlistListView.setItems(FXCollections.observableArrayList(model.searchUpdatePlaylistView(playlistName)));
 	}
 
-	private void setupMediaPlayerListeners(MediaPlayer mediaPlayer) {
-		mediaPlayer.setOnReady(() -> {
-			progressBar.setValue(0); // Reset progress bar
-			totalTimeLabel.setText(formatTime(mediaPlayer.getTotalDuration()));
-		});
+	private void setupCurrentTimeHandler() {
+		if (model.getMediaPlayer() != null) {
+			model.getMediaPlayer().currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+				currentTimeLabel.setText(formatTime(newValue, model.getMediaPlayer().getTotalDuration()));
+			});
+		}
+	}
+	/*
+	TODO: Clear up code duplication that leads to 2 end timers
+	 */
+	private String formatTime(Duration elapsed, Duration totalDuration) {
+		int intElapsed = (int) Math.floor(elapsed.toSeconds());
+		int elapsedHours = intElapsed / (60 * 60);
+		if (elapsedHours > 0) {
+			intElapsed -= elapsedHours * 60 * 60;
+		}
+		int elapsedMinutes = intElapsed / 60;
+		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
 
-		// Bind the progress bar to the currentTimeProperty of the MediaPlayer
-		progressBar.valueProperty().bind(Bindings.createDoubleBinding(() -> {
-			if (mediaPlayer.getTotalDuration().toSeconds() == 0) {
-				return 0.0;
+		if (totalDuration.greaterThan(Duration.ZERO)) {
+			int intTotal = (int) Math.floor(totalDuration.toSeconds());
+			int totalHours = intTotal / (60 * 60);
+			if (totalHours > 0) {
+				intTotal -= totalHours * 60 * 60;
+			}
+			int totalMinutes = intTotal / 60;
+			int totalSeconds = intTotal - totalHours * 60 * 60 - totalMinutes * 60;
+			if (totalHours > 0) {
+				return String.format("%d:%02d:%02d/%d:%02d:%02d",
+						elapsedHours, elapsedMinutes, elapsedSeconds,
+						totalHours, totalMinutes, totalSeconds);
 			} else {
-				return (mediaPlayer.getCurrentTime().toSeconds() / mediaPlayer.getTotalDuration().toSeconds()) * 100;
+				return String.format("%02d:%02d/%02d:%02d",
+						elapsedMinutes, elapsedSeconds,
+						totalMinutes, totalSeconds);
 			}
-		}, mediaPlayer.currentTimeProperty()));
-
-		// Update the time label as the song progresses
-		mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-			if (mediaPlayer.getTotalDuration().greaterThan(Duration.ZERO)) {
-				currentTimeLabel.setText(formatTime(newValue));
+		} else {
+			if (elapsedHours > 0) {
+				return String.format("%d:%02d:%02d",
+						elapsedHours, elapsedMinutes, elapsedSeconds);
+			} else {
+				return String.format("%02d:%02d",
+						elapsedMinutes, elapsedSeconds);
 			}
-		});
-
-		mediaPlayer.setOnEndOfMedia(() -> {
-			progressBar.setValue(100); // Set progress to 100% when the song ends
-			playPauseButton.setText("Play");
-		});
-
-		mediaPlayer.setOnPaused(() -> playPauseButton.setText("Play"));
-		mediaPlayer.setOnPlaying(() -> playPauseButton.setText("Pause"));
-
-		mediaPlayer.setOnError(() -> {
-			System.out.println("Playback error: " + mediaPlayer.getError().getMessage());
-		});
+		}
 	}
 }
