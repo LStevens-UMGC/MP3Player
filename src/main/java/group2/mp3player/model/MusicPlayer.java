@@ -12,7 +12,7 @@ import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;g
+import java.util.Objects;
 
 public class MusicPlayer {
     private static final MusicPlayer instance = new MusicPlayer();
