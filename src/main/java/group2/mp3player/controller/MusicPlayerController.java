@@ -1,15 +1,31 @@
 package group2.mp3player.controller;
+
+import java.io.File;
+import java.util.Optional;
+
 import group2.mp3player.model.MusicPlayer;
-import group2.mp3player.model.Song;
-import group2.mp3player.utils.MetaDataExtractor;
 import group2.mp3player.model.Playlist;
+import group2.mp3player.model.Song;
 import group2.mp3player.utils.JsonHandler;
+import group2.mp3player.utils.MetaDataExtractor;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import java.io.File;
@@ -20,6 +36,8 @@ import java.util.ArrayList;
 public class MusicPlayerController {
 	private final MusicPlayer model = MusicPlayer.getInstance();
 	private static final String PLAYLISTS_FILE = "playlists.json";
+	private static final String ALL_SONGS_FILE = "allSongs.json";
+	private static final String SONG_HISTORY_FILE = "songHistory.json";
 
 	@FXML
 	private ListView<String> playlistListView;
@@ -86,8 +104,8 @@ public class MusicPlayerController {
 		artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
 		albumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
 		yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
-
-		songTableView.setItems(model.getSongHistory());
+		// Changes to retrive all songs list.
+		songTableView.setItems(model.getAllSongs());
 
 		// Initialize model
 		model.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
@@ -125,6 +143,7 @@ public class MusicPlayerController {
 			}
 		});
 
+
 		searchPlaylistField.textProperty().addListener((obs, oldVal, newVal) -> {searchUpdatePlaylistView(newVal);});
 
 		searchSongsField.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -146,6 +165,19 @@ public class MusicPlayerController {
 		setupProgressBarSeekHandler();
 	}
 
+	/*
+	 * On receiving a close request from the primary stage, will save allSongs,
+	 * songHistory, and playlists.
+	 */
+	@FXML
+	private void saveSongData() {
+		JsonHandler.saveToJson(model.getAllSongs(), ALL_SONGS_FILE);
+		JsonHandler.savePlaylistsToJson(model.getPlaylists(), PLAYLISTS_FILE);
+		JsonHandler.saveToJson(model.getSongHistory(), SONG_HISTORY_FILE);
+		System.out.println("Song Data Saved");
+
+	}
+
 	@FXML
 	private void handleAddSongToPlaylist() {
 		Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
@@ -155,6 +187,7 @@ public class MusicPlayerController {
 					.filter(playlist -> playlist.getName().equals(selectedPlaylistName)).findFirst().orElse(null);
 			if (selectedPlaylist != null) {
 				selectedPlaylist.addSong(selectedSong);
+
 				JsonHandler.savePlaylistsToJson(model.getPlaylists(), "playlists.json");
 				System.out.println("Song added to playlist and saved to JSON.");
 			} else {
@@ -165,6 +198,7 @@ public class MusicPlayerController {
 		}
 	}
 
+	// added addToAllSongs call
 	@FXML
 	private void handleOpen() {
 		FileChooser fileChooser = new FileChooser();
@@ -176,6 +210,7 @@ public class MusicPlayerController {
 				Song song = MetaDataExtractor.extractMetadata(selectedFile);
 				// Add the song with detailed metadata
 				model.getSongHistory().add(song);
+				addToAllSongs(song);
 				JsonHandler.saveToJson(model.getSongHistory(), model.getSongHistoryFile());
 				// Display metadata in labels (optional)
 				songTitleLabel.setText("Title: " + song.getTitle());
@@ -186,6 +221,51 @@ public class MusicPlayerController {
 		} else {
 			System.out.println("No file selected or dialog was canceled.");
 		}
+	}
+
+	// Root function to begin recursively adding songs.
+	@FXML
+	private void handleMassOpen() {
+		DirectoryChooser dChooser = new DirectoryChooser();
+		File directory = dChooser.showDialog(null);
+		recursiveOpen(directory);
+
+	}
+
+	// Recursive function to add all songs.
+	private void recursiveOpen(File directory) {
+		if (directory.isDirectory()) {
+			File[] files = directory.listFiles();
+			if (files != null) {
+				for (File file : files) {
+					if (file.isDirectory()) {
+						recursiveOpen(file); // Recursively traverse subdirectories
+					} else if (file.getName().toLowerCase().endsWith(".mp3")) {
+						Song song = MetaDataExtractor.extractMetadata(file);
+						JsonHandler.saveToJson(model.getSongHistory(), model.getSongHistoryFile());
+						model.getSongHistory().add(song);
+						addToAllSongs(song);
+
+					}
+				}
+			}
+		}
+
+	}
+
+	// Adds to the all songs observable list, used in handle open and recursive
+	// open.
+	private void addToAllSongs(Song song) {
+		model.getAllSongs().add(song);
+		JsonHandler.saveToJson(model.getAllSongs(), model.getAllSongsFile());
+	}
+
+	// Switches the song view to the all songs list.
+	@FXML
+	private void viewAllSongs() {
+		playlistLabel.setText("Viewing : All Songs");
+		songTableView.setItems(model.getAllSongs());
+
 	}
 
 	@FXML
@@ -218,11 +298,14 @@ public class MusicPlayerController {
 		}
 	}
 
+	// Clears all songs from song history and resets the playlist.
 	@FXML
 	private void handleClearSongHistory() {
 		songTableView.getItems().clear();
 		model.getSongHistory().clear();
-		JsonHandler.clearPlaylistsFromJson("songHistory.json");
+		model.getAllSongs().clear();
+		JsonHandler.clearPlaylistsFromJson(model.getSongHistoryFile());
+		JsonHandler.clearPlaylistsFromJson(model.getAllSongsFile());
 	}
 
 	@FXML
@@ -267,9 +350,9 @@ public class MusicPlayerController {
 	}
 
 	/*
-	TODO HERE
+	 * TODO HERE
 	 */
-	//Search playlist functionality
+	// Search playlist functionality
 	private void searchUpdatePlaylistView(String playlistName) {
 //		List<String> playlistNames = new ArrayList<>();
 //		if(playlistName == null || playlistName.isEmpty()) {
@@ -287,6 +370,15 @@ public class MusicPlayerController {
 		playlistListView.setItems(FXCollections.observableArrayList(model.searchUpdatePlaylistView(playlistName)));
 	}
 
+//-->
+	private void addSongFromPlaylist(Song song) {
+		ObservableList<Song> songsInHistory = model.getSongHistory();
+
+		for (Song comparingSong : songsInHistory) {
+
+		}
+	}
+
 	private void setupCurrentTimeHandler() {
 		if (model.getMediaPlayer() != null) {
 			model.getMediaPlayer().currentTimeProperty().addListener((observable, oldValue, newValue) -> {
@@ -294,8 +386,9 @@ public class MusicPlayerController {
 			});
 		}
 	}
+
 	/*
-	TODO: Clear up code duplication that leads to 2 end timers
+	 * TODO: Clear up code duplication that leads to 2 end timers
 	 */
 	private String formatTime(Duration elapsed, Duration totalDuration) {
 		int intElapsed = (int) Math.floor(elapsed.toSeconds());
@@ -304,7 +397,7 @@ public class MusicPlayerController {
 			intElapsed -= elapsedHours * 60 * 60;
 		}
 		int elapsedMinutes = intElapsed / 60;
-		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+		int elapsedSeconds = intElapsed - (elapsedHours * 60 * 60) - (elapsedMinutes * 60);
 
 		if (totalDuration.greaterThan(Duration.ZERO)) {
 			int intTotal = (int) Math.floor(totalDuration.toSeconds());
@@ -313,23 +406,18 @@ public class MusicPlayerController {
 				intTotal -= totalHours * 60 * 60;
 			}
 			int totalMinutes = intTotal / 60;
-			int totalSeconds = intTotal - totalHours * 60 * 60 - totalMinutes * 60;
+			int totalSeconds = intTotal - (totalHours * 60 * 60) - (totalMinutes * 60);
 			if (totalHours > 0) {
-				return String.format("%d:%02d:%02d/%d:%02d:%02d",
-						elapsedHours, elapsedMinutes, elapsedSeconds,
+				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
 						totalHours, totalMinutes, totalSeconds);
 			} else {
-				return String.format("%02d:%02d/%02d:%02d",
-						elapsedMinutes, elapsedSeconds,
-						totalMinutes, totalSeconds);
+				return String.format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, totalMinutes, totalSeconds);
 			}
 		} else {
 			if (elapsedHours > 0) {
-				return String.format("%d:%02d:%02d",
-						elapsedHours, elapsedMinutes, elapsedSeconds);
+				return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
 			} else {
-				return String.format("%02d:%02d",
-						elapsedMinutes, elapsedSeconds);
+				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
 			}
 		}
 	}

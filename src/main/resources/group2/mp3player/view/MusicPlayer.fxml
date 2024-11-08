@@ -23,10 +23,14 @@
     <!-- Menu bar -->
     <MenuBar>
         <Menu text="File">
-            <MenuItem text="Open New Song" onAction="#handleOpen"/>
+            <MenuItem text="Add New Song" onAction="#handleOpen"/>
+            <MenuItem text="Add New Songs" onAction= "#handleMassOpen"/>
+            <MenuItem text="Save Song Data" onAction= "#saveSongData"/>
         </Menu>
         <Menu text="View">
             <MenuItem text="Equalizer" />
+            <MenuItem text="All Songs" onAction = "#viewAllSongs" />
+            <MenuItem text="Song History" onAction = "#handleShowSongHistory" />
         </Menu>
     </MenuBar>
 
@@ -38,11 +42,10 @@
             <ListView fx:id="playlistListView"/>
             <HBox spacing="5" alignment="CENTER">
                 <Button text="Create Playlist" onAction="#handleCreatePlaylist"/>
-                <Button fx:id="showHistoryButton" text="Show History" onAction="#handleShowSongHistory"/>
             </HBox>
             <Button fx:id="addSongToPlaylistButton" text="Add Song to Playlist" onAction="#handleAddSongToPlaylist"/>
             <Button fx:id="clearAllPlaylistsButton" text="Clear All Playlists" onAction="#handleClearAllPlayLists"/>
-            <Button fx:id="clearSongHistory"        text="Clear Song History"  onAction="#handleClearSongHistory"/>
+            <Button fx:id="clearSongHistory"        text="Clear Song Data"  onAction="#handleClearSongHistory"/>
         </VBox>
 
         <!-- Song list and progress -->
@@ -59,12 +62,10 @@
 
             <!-- Progress bar and controls -->
             <HBox alignment="CENTER" spacing="5">
-                <Label fx:id="playlistLabel" text="Viewing: Song History"/>
+                <Label fx:id="playlistLabel" text="Viewing: All Songs"/>
                 <Label fx:id="songTitleLabel" text="No song playing"/>
                 <Slider fx:id="progressBar"/>
                 <Label fx:id="currentTimeLabel" text="0:00"/>
-                <Label text=" / "/>
-                <Label fx:id="totalTimeLabel" text="0:00"/>
             </HBox>
 
             <!-- Controls -->
