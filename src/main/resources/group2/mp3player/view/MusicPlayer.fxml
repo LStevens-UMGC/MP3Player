@@ -34,7 +34,7 @@
     <HBox alignment="CENTER">
         <!-- Playlist list view -->
         <VBox spacing="10" alignment="TOP_CENTER">
-            <TextField fx:id="searchTextField" promptText="Search playlists..." />
+            <TextField fx:id="searchPlaylistField" promptText="Search playlists..." prefHeight="89" prefWidth="10" />
             <ListView fx:id="playlistListView"/>
             <HBox spacing="5" alignment="CENTER">
                 <Button text="Create Playlist" onAction="#handleCreatePlaylist"/>
@@ -47,6 +47,7 @@
 
         <!-- Song list and progress -->
         <VBox prefWidth="550" spacing="10">
+            <TextField fx:id="searchSongsField" promptText="Search songs..." />
             <TableView fx:id="songTableView">
                 <columns >
                     <TableColumn fx:id="songNameColumn" text="Name"/>

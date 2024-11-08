@@ -1,5 +1,8 @@
 package group2.mp3player.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Song {
     private String title;
     private String artist;
@@ -34,5 +37,19 @@ public class Song {
     public String getYear() {
         return year;
     }
+
+    public static List<Song> searchSongs(List<Song> songs, String input){
+        List<Song> result = new ArrayList<Song>();
+        for(Song song : songs){
+            if(song.getTitle().toLowerCase().contains(input.toLowerCase()) ||
+                    song.getArtist().toLowerCase().contains(input.toLowerCase())||
+                    song.getAlbum().toLowerCase().contains(input.toLowerCase())||
+                    song.getYear().contains(input)
+            ){result.add(song);
+            }
+        }
+        return result;
+    }
+
 }
 

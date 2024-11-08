@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
 
@@ -23,6 +24,7 @@ public class MusicPlayerController {
 	@FXML
 	private ListView<String> playlistListView;
 
+	private List<Song> mainPlaylist = new ArrayList<>();
 	@FXML
 	private TableView<Song> songTableView;
 
@@ -69,7 +71,10 @@ public class MusicPlayerController {
 	private Button clearPlaylistButton;
 
 	@FXML
-	private TextField searchTextField;
+	private TextField searchPlaylistField;
+
+	@FXML
+	private TextField searchSongsField;
 
 	@FXML
 	private Slider volumeSlider;
@@ -120,7 +125,23 @@ public class MusicPlayerController {
 			}
 		});
 
-		searchTextField.textProperty().addListener((obs, oldVal, newVal) -> {searchUpdatePlaylistView(newVal);});
+		searchPlaylistField.textProperty().addListener((obs, oldVal, newVal) -> {searchUpdatePlaylistView(newVal);});
+
+		searchSongsField.textProperty().addListener((obs, oldVal, newVal) -> {
+			List<Song> currentList;
+
+			if(mainPlaylist == null|| mainPlaylist.isEmpty()){
+				currentList=model.getSongHistory();
+			}else{
+				currentList=mainPlaylist;
+			}
+
+			if(newVal.isEmpty()) {
+				songTableView.setItems(FXCollections.observableArrayList(currentList));
+			}
+			List<Song> result = Song.searchSongs(currentList, newVal);
+			songTableView.setItems(FXCollections.observableArrayList(result));
+		});
 
 		setupProgressBarSeekHandler();
 	}
@@ -236,7 +257,12 @@ public class MusicPlayerController {
 	// Load songs from a selected playlist
 	private void loadPlaylist(String playlistName) {
 
-		songTableView.setItems(model.loadPlaylist(playlistName));;
+		List<Song> loadedSongs = model.loadPlaylist(playlistName);
+
+		mainPlaylist.clear();
+		mainPlaylist.addAll(loadedSongs);
+
+		songTableView.setItems(FXCollections.observableList(mainPlaylist));
 
 	}
 
