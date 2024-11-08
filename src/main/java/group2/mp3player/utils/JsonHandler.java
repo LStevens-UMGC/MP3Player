@@ -17,7 +17,7 @@ public class JsonHandler {
 	public static void saveToJson(ObservableList<Song> songs, String filePath) {
 		try (FileWriter writer = new FileWriter(filePath)) {
 			new Gson().toJson(songs, writer);
-			System.out.println("Song history saved successfully.");
+			System.out.println("Song data saved successfully.");
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Error saving song history.");
@@ -58,7 +58,7 @@ public class JsonHandler {
 		}
 	}
 
-	// Added function to clear song history from the JSON, its basically dorielis's
+	// Added function to clear song history from the JSON.
 	// function and its added for clarity.
 	// Can be removed if function call is set to clearPlaylistFromJson.
 	public static void clearSongHistoryFromJson(String filePath) {
