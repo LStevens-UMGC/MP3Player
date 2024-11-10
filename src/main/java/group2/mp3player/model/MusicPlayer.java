@@ -7,12 +7,16 @@ import java.util.Objects;
 import group2.mp3player.utils.JsonHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Button;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MusicPlayer {
 	private static final MusicPlayer instance = new MusicPlayer();
@@ -111,6 +115,21 @@ public class MusicPlayer {
 		}
 	}
 
+    public void handlePrevNext(Song selectedSong){
+        if(mediaPlayer == null){
+            if(selectedSong != null) {
+                initializeMediaPlayer(selectedSong);
+                mediaPlayer.play();
+            }
+        }
+        else{
+            mediaPlayer.pause();
+            initializeMediaPlayer(selectedSong);
+            mediaPlayer.play();
+        }
+    }
+
+
 //Modified to add new the currently playing song to song history.
 //Commented out code was causing minor visual glitch with song duration label.
 	private void initializeMediaPlayer(Song selectedSong) {
@@ -165,3 +184,4 @@ public class MusicPlayer {
 		return playlistNames;
 	}
 }
+

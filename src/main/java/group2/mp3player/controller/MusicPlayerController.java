@@ -8,8 +8,11 @@ import group2.mp3player.model.Playlist;
 import group2.mp3player.model.Song;
 import group2.mp3player.utils.JsonHandler;
 import group2.mp3player.utils.MetaDataExtractor;
+import group2.mp3player.model.Playlist;
+import group2.mp3player.utils.JsonHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -275,6 +278,39 @@ public class MusicPlayerController {
 	}
 
 	@FXML
+	private void handleNextSong(){
+		Song currentSong = songTableView.getSelectionModel().getSelectedItem();
+		ArrayList<Song> songList = new ArrayList<>(songTableView.getItems());
+		Song nextSong = new Song();
+		if (songList.indexOf(currentSong) < songList.size()-1){
+			songTableView.getSelectionModel().clearAndSelect(songTableView.getSelectionModel().getSelectedIndex()+1);
+			nextSong = songTableView.getSelectionModel().getSelectedItem();
+
+        }
+		else if(songList.indexOf(currentSong) == songList.size()-1){
+			songTableView.getSelectionModel().clearAndSelect(0);
+			nextSong = songTableView.getSelectionModel().getSelectedItem();
+		}
+		model.handlePrevNext(nextSong);
+	}
+
+	@FXML
+	private void handlePreviousSong(){
+		Song currentSong = songTableView.getSelectionModel().getSelectedItem();
+		ArrayList<Song> songList = new ArrayList<>(songTableView.getItems());
+		Song prevSong = new Song();
+		if (songList.indexOf(currentSong) == 0){
+			prevSong = currentSong;
+		}
+		else if(songList.indexOf(currentSong) <= songList.size()){
+			songTableView.getSelectionModel().clearAndSelect(songTableView.getSelectionModel().getSelectedIndex()-1);
+			prevSong = songTableView.getSelectionModel().getSelectedItem();
+		}
+		model.handlePrevNext(prevSong);
+	}
+
+
+	@FXML
 	private void handleClearAllPlayLists() {
 		if (model.getPlaylists().isEmpty()) {
 			System.out.println("No playlist found.");
@@ -420,5 +456,8 @@ public class MusicPlayerController {
 				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
 			}
 		}
+	}
+
+	public void handleNext(ActionEvent actionEvent) {
 	}
 }

@@ -10,6 +10,8 @@ public class Song {
     private String year;
     private String filePath;
 
+    public Song(){};
+
     public Song(String title, String artist, String album, String year, String filePath) {
         this.title = title;
         this.artist = artist;

@@ -70,9 +70,9 @@
 
             <!-- Controls -->
             <HBox alignment="CENTER" spacing="8">
-                <Button fx:id="prevButton" text="Prev"/>
+                <Button fx:id="prevButton" text="Prev" onAction="#handlePreviousSong"/>
                 <Button fx:id="playPauseButton" text="Play" onAction="#handlePlayPause"/>
-                <Button fx:id="nextButton" text="Next"/>
+                <Button fx:id="nextButton" text="Next" onAction="#handleNextSong"/>
                 <Slider fx:id="volumeSlider"/>
                 <Text text="Volume"/>
             </HBox>
