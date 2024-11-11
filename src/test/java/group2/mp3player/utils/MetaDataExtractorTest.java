@@ -21,8 +21,8 @@ class MetaDataExtractorTest {
         // Mock file and metadata
         File mockFile = new File("test.mp3");
 
-        AudioFile mockAudioFile = (AudioFile)Mockito.mock(AudioFile.class);
-        Tag mockTag = (Tag)Mockito.mock(Tag.class);
+        AudioFile mockAudioFile = mock(AudioFile.class);
+        Tag mockTag = mock(Tag.class);
 
         // Set up expected metadata
         when(mockTag.getFirst(FieldKey.TITLE)).thenReturn("Test Title");
