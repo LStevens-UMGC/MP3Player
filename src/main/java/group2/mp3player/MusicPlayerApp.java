@@ -6,6 +6,11 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 
+/**
+ * MusicPlayerApp is the main entry point for the MP3 Player JavaFX application.
+ * This class extends the Application class and is responsible for loading the
+ * primary stage with the user interface defined in the MusicPlayer.fxml file.
+ */
 public class MusicPlayerApp extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {

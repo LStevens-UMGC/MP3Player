@@ -8,7 +8,18 @@ import org.jaudiotagger.tag.Tag;
 
 import java.io.File;
 
+/**
+ * MetaDataExtractor is a utility class for extracting metadata from audio files.
+ * It reads the metadata such as title, artist, album, and year from the provided file.
+ */
 public class MetaDataExtractor {
+    /**
+     * Extracts metadata from the provided audio file.
+     *
+     * @param file the audio file from which to extract metadata
+     * @return a Song object containing the extracted metadata,
+     *         or null if an error occurs during extraction
+     */
     public static Song extractMetadata(File file) {
         try {
             AudioFile audioFile = AudioFileIO.read(file);

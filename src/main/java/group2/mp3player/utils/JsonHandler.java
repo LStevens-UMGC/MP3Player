@@ -13,7 +13,16 @@ import group2.mp3player.model.Playlist;
 import group2.mp3player.model.Song;
 import javafx.collections.ObservableList;
 
+/**
+ * JsonHandler provides methods to save and load songs and playlists to and from JSON files.
+ */
 public class JsonHandler {
+	/**
+	 * Saves the provided list of songs to a JSON file specified by the file path.
+	 *
+	 * @param songs the list of songs to save in JSON format
+	 * @param filePath the path of the file where the songs will be saved
+	 */
 	public static void saveToJson(ObservableList<Song> songs, String filePath) {
 		try (FileWriter writer = new FileWriter(filePath)) {
 			new Gson().toJson(songs, writer);
@@ -24,6 +33,12 @@ public class JsonHandler {
 		}
 	}
 
+	/**
+	 * Loads a list of Song objects from a specified JSON file.
+	 *
+	 * @param filePath the path of the JSON file containing the song data
+	 * @return a list of Song objects loaded from the JSON file, or null if an error occurs
+	 */
 	public static List<Song> loadFromJson(String filePath) {
 		try (FileReader reader = new FileReader(filePath)) {
 			Type listType = new TypeToken<List<Song>>() {
@@ -36,6 +51,12 @@ public class JsonHandler {
 		}
 	}
 
+	/**
+	 * Saves the provided list of playlists to a JSON file specified by the file path.
+	 *
+	 * @param playlists the list of playlists to save in JSON format
+	 * @param filePath the path of the file where the playlists will be saved
+	 */
 	public static void savePlaylistsToJson(List<Playlist> playlists, String filePath) {
 		try (FileWriter writer = new FileWriter(filePath)) {
 			new Gson().toJson(playlists, writer);
@@ -46,6 +67,12 @@ public class JsonHandler {
 		}
 	}
 
+	/**
+	 * Loads a list of Playlist objects from a specified JSON file.
+	 *
+	 * @param filePath the path of the JSON file containing the playlist data
+	 * @return a list of Playlist objects loaded from the JSON file, or null if an error occurs
+	 */
 	public static List<Playlist> loadPlaylistsFromJson(String filePath) {
 		try (FileReader reader = new FileReader(filePath)) {
 			Type listType = new TypeToken<List<Playlist>>() {
@@ -58,6 +85,11 @@ public class JsonHandler {
 		}
 	}
 
+	/**
+	 * Clears the song history by writing an empty list to the specified JSON file.
+	 *
+	 * @param filePath the path of the JSON file from which the song history will be cleared
+	 */
 	// Added function to clear song history from the JSON.
 	// function and its added for clarity.
 	// Can be removed if function call is set to clearPlaylistFromJson.
@@ -72,6 +104,11 @@ public class JsonHandler {
 		}
 	}
 
+	/**
+	 * Clears all playlists by writing an empty list to the specified JSON file.
+	 *
+	 * @param filePath the path of the JSON file from which the playlists will be cleared
+	 */
 	public static void clearPlaylistsFromJson(String filePath) {
 		try (FileWriter writer = new FileWriter(filePath)) {
 			Type listType = new TypeToken<List<Playlist>>() {
