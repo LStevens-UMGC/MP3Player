@@ -28,6 +28,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -120,6 +121,7 @@ public class MusicPlayerController {
 				if (selectedSong != null) {
 					model.playSongFromHistory(selectedSong);
 					setupCurrentTimeHandler();
+					setupAutoPlayHandler();
 				}
 			}
 		});
@@ -166,6 +168,9 @@ public class MusicPlayerController {
 		});
 
 		setupProgressBarSeekHandler();
+
+		setupAutoPlayHandler();
+
 	}
 
 	/*
@@ -292,6 +297,7 @@ public class MusicPlayerController {
 			nextSong = songTableView.getSelectionModel().getSelectedItem();
 		}
 		model.handlePrevNext(nextSong);
+		resetSetup();
 	}
 
 	@FXML
@@ -307,6 +313,7 @@ public class MusicPlayerController {
 			prevSong = songTableView.getSelectionModel().getSelectedItem();
 		}
 		model.handlePrevNext(prevSong);
+		resetSetup();
 	}
 
 
@@ -415,6 +422,11 @@ public class MusicPlayerController {
 		}
 	}
 
+	private void resetSetup(){
+		setupCurrentTimeHandler();
+		setupAutoPlayHandler();
+	}
+
 	private void setupCurrentTimeHandler() {
 		if (model.getMediaPlayer() != null) {
 			model.getMediaPlayer().currentTimeProperty().addListener((observable, oldValue, newValue) -> {
@@ -423,6 +435,16 @@ public class MusicPlayerController {
 		}
 	}
 
+	private void setupAutoPlayHandler(){
+		if (model.getMediaPlayer() != null){
+
+			model.getMediaPlayer().setOnEndOfMedia(() ->{
+				handleNextSong();
+				setupCurrentTimeHandler();
+				setupAutoPlayHandler();
+			});
+		}
+	}
 	/*
 	 * TODO: Clear up code duplication that leads to 2 end timers
 	 */
@@ -458,6 +480,5 @@ public class MusicPlayerController {
 		}
 	}
 
-	public void handleNext(ActionEvent actionEvent) {
-	}
+
 }

@@ -140,7 +140,9 @@ public class MusicPlayer {
 		// totalTimeLabel.setText(formatTime(media.getDuration())));
 		mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> progressBar
 				.setValue((newTime.toSeconds() / media.getDuration().toSeconds()) * 100));
-	}
+        mediaPlayer.setAutoPlay(true);
+    }
+
 
 	public void playSongFromHistory(Song song) {
 		if (mediaPlayer != null) {
