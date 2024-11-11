@@ -29,9 +29,12 @@ runtime environment installed.*
 ## Project Structure
 The project uses a MVC architecture for separation of responsibilities. 
 
-- `src/`: Contains the source code.
+- `src/main/`: Contains the source code.
 - `src/main/java/group2.mp3player/controller`: Contains the controllers .java files.
 - `src/main/java/group2.mp3player/model`: Contains the models .java files.
+- `src/test/`: Contains the test code.
+- `src/test/java/group2.mp3player/controller`: Contains the controllers test .java files.
+- `src/test/java/group2.mp3player/model`: Contains the models test .java files.
 - `src/resources/group2.mp3player/view`: Contains the view in .fxml files.
 - `src/resources/`: Contains other resources.
 - `pom.xml`: Contains the maven resources for project dependencies.
