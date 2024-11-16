@@ -140,6 +140,8 @@ public class MusicPlayerController {
 			if (event.getClickCount() == 2) {
 				Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
 				if (selectedSong != null) {
+					playlistLabel.setText("");
+					songTitleLabel.setText("Viewing : " + selectedSong.getTitle());
 					model.playSongFromHistory(selectedSong);
 					setupCurrentTimeHandler();
 					setupAutoPlayHandler();
@@ -386,6 +388,8 @@ public class MusicPlayerController {
 			songTableView.getSelectionModel().clearAndSelect(0);
 			nextSong = songTableView.getSelectionModel().getSelectedItem();
 		}
+		playlistLabel.setText(""); // Setting song title display
+		songTitleLabel.setText("Viewing : " + nextSong.getTitle()); //setting song title display
 		model.handlePrevNext(nextSong);
 		resetSetup();
 	}
