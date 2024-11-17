@@ -24,7 +24,6 @@ public class MetaDataExtractor {
         try {
             AudioFile audioFile = AudioFileIO.read(file);
             Tag tag = audioFile.getTag();
-
             String title = tag != null ? tag.getFirst(FieldKey.TITLE) : "Unknown";
             String artist = tag != null ? tag.getFirst(FieldKey.ARTIST) : "Unknown";
             String album = tag != null ? tag.getFirst(FieldKey.ALBUM) : "Unknown";
