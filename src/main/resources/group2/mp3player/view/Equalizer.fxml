@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="group2.mp3player.controller.EqualizerController" spacing="10" alignment="CENTER">
-    <Label text="Equalizer" style="-fx-font-size: 18px;"/>
-    <HBox alignment="CENTER">
-        <VBox fx:id="equalizerContainer" spacing="10" alignment="CENTER"/>
-    </HBox>
-</VBox>
+<!-- Root HBox for the equalizer sliders and labels -->
+<HBox
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="group2.mp3player.controller.EqualizerController"
+        spacing="15"
+        style="-fx-padding: 20;"
+        alignment="CENTER">
+
+    <!-- Title label for the Equalizer (optional for centering above the sliders) -->
+    <VBox alignment="CENTER" spacing="10">
+        <Label text="Equalizer" style="-fx-font-size: 18px;"/>
+        <!-- HBox container where sliders and labels will be dynamically added -->
+        <HBox fx:id="equalizerContainer" spacing="15" alignment="CENTER"/>
+    </VBox>
+</HBox>
