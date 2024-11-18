@@ -1,41 +1,30 @@
 package group2.mp3player.controller;
 
-import java.io.File;
-import java.util.Optional;
-
+import group2.mp3player.model.Equalizer;
 import group2.mp3player.model.MusicPlayer;
 import group2.mp3player.model.Playlist;
 import group2.mp3player.model.Song;
 import group2.mp3player.utils.JsonHandler;
 import group2.mp3player.utils.MetaDataExtractor;
-import group2.mp3player.model.Playlist;
-import group2.mp3player.utils.JsonHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 
 /**
  * The `MusicPlayerController` class is responsible for handling user interactions
@@ -46,6 +35,7 @@ public class MusicPlayerController {
 	private static final String PLAYLISTS_FILE = "playlists.json";
 	private static final String ALL_SONGS_FILE = "allSongs.json";
 	private static final String SONG_HISTORY_FILE = "songHistory.json";
+	private Equalizer savedEqualizer;
 
 	@FXML
 	private ListView<String> playlistListView;
@@ -508,6 +498,36 @@ public class MusicPlayerController {
 	private void handleShowSongHistory() {
 		songTableView.setItems(model.getSongHistory());
 		playlistLabel.setText("Viewing : Song History");
+	}
+
+	@FXML
+	private void handleOpenEqualizer() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/group2/mp3player/view/Equalizer.fxml"));
+			Parent root = loader.load();
+
+			EqualizerController equalizerController = loader.getController();
+			equalizerController.setMediaPlayer(model.getMediaPlayer());
+
+			// Restore saved equalizer settings if available
+			if (savedEqualizer != null) {
+				equalizerController.getEqualizerModel().setGainValues(savedEqualizer.getGainValues());
+			}
+
+			Stage equalizerStage = new Stage();
+			equalizerStage.setTitle("Equalizer");
+			equalizerStage.setScene(new Scene(root));
+
+			// Save equalizer settings on close
+			equalizerStage.setOnCloseRequest(event -> {
+				savedEqualizer = equalizerController.getEqualizerModel();
+			});
+
+			equalizerStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error opening the equalizer.");
+		}
 	}
 
 	/**

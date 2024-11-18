@@ -28,7 +28,7 @@
             <MenuItem text="Save Song Data" onAction= "#saveSongData"/>
         </Menu>
         <Menu text="View">
-            <MenuItem text="Equalizer" />
+            <MenuItem text="Equalizer"  onAction="#handleOpenEqualizer"/>
             <MenuItem text="All Songs" onAction = "#viewAllSongs" />
             <MenuItem text="Song History" onAction = "#handleShowSongHistory" />
         </Menu>
