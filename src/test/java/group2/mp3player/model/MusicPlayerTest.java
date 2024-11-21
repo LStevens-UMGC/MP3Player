@@ -90,34 +90,47 @@ void testSetLabelsAndProgressBar() {
     });
 }
 
-//Test MP5
+//Test case # MP5
 @Test
 void testSetLabelsAndProgressBarHandlesNullInputs() {
         Platform.startup(()->{});
         Platform.runLater(()-> {
 
-            Label songTitleLabel = null;
-            Label totalTimeLabel = null;
-            Slider progressBar = null;
+            Label songTitleLabel = new Label("Old Title");
+            Label totalTimeLabel = new Label("00:00");
+            Slider progressBar = new Slider(0, 100, 25);
 
             musicPlayer.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
 
-            //Using reflection checks that the fields in music player were set to null
-            try {
-                var songTitleLabelField = MusicPlayer.class.getDeclaredField("songTitleLabel");
-                var totalTimeLabelField = MusicPlayer.class.getDeclaredField("totalTimeLabel");
-                var progressBarField = MusicPlayer.class.getDeclaredField("progressBar");
+            musicPlayer.setLabelsAndProgressBar(null, null, null);
 
-                songTitleLabelField.setAccessible(true);
-                totalTimeLabelField.setAccessible(true);
-                progressBarField.setAccessible(true);
+            assertNull(songTitleLabel.getText(), "songTitleLabel text to be null");
+            assertNull(totalTimeLabel.getText(), "totalTimeLabel text to be null");
+            assertEquals(0, progressBar.getValue(), "progressBar's value to reset to 0");
+        });
+}
+//Test case # MP6
+@Test
+void testSetLabelsAndProgressBarUpdatesValues() {
+    // Purpose: Verify that previously set Label and Slider objects are updated to new inputs
+        Platform.startup(()->{});
+        Platform.runLater(()-> {
+            //Old values
+            Label oldTitleLabel = new Label("Old Title");
+            Label oldTimeLabel = new Label("00:00");
+            Slider oldProgressBar = new Slider(0, 100, 25);
 
-                assertNull(songTitleLabelField.get(musicPlayer), "songTitleLabel to be set to null");
-                assertNull(totalTimeLabelField.get(musicPlayer), "totalTimeLabel to be set to null");
-                assertNull(progressBarField.get(musicPlayer), "progressBar to be set to null");
-            } catch (Exception e) {
-                fail("Error when performing reflection: " + e.getMessage());
-            }
+            musicPlayer.setLabelsAndProgressBar(oldTitleLabel, oldTimeLabel, oldProgressBar);
+
+            //new values
+            Label newTitleLabel = new Label("New Title");
+            Label newTimeLabel = new Label("03:45");
+            Slider newProgressBar = new Slider(0, 100, 75);
+
+                assertEquals(newTitleLabel, musicPlayer.songTitleLabel, "Old title label to be updated to new title label");
+                assertEquals(newTimeLabel,  musicPlayer.totalTimeLabel, "Old time label to be updated to new time label");
+                assertEquals(newProgressBar, musicPlayer.progressBar, "Old progress bar to be updated to new progress bar");
+
         });
 }
 

@@ -38,9 +38,9 @@ public class MusicPlayer {
 	private static final String ALL_SONGS_FILE = "allSongs.json";
 	private MediaPlayer mediaPlayer;
 
-	private Label songTitleLabel;
-	private Label totalTimeLabel;
-	private Slider progressBar;
+	Label songTitleLabel;
+	Label totalTimeLabel;
+	Slider progressBar;
 
 	/**
 	 * Private constructor to prevent instantiation of the MusicPlayer class.
@@ -153,6 +153,7 @@ public class MusicPlayer {
 		this.totalTimeLabel = totalTimeLabel;
 		this.progressBar = progressBar;
 	}
+
 
 	/**
 	 * Sets the MediaPlayer instance used by the MusicPlayer. Mostly used for testing purposes.
