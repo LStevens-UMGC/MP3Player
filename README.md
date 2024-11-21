@@ -5,6 +5,11 @@ The MP3 Player is a lightweight, feature-rich music player application built usi
 
 This cross-platform application can run on any system with a compatible **Java Runtime Environment (JRE)** installed. Key features include **persistent settings** across sessions, **dynamic playlist management**, and **support for MP3 media formats**.
 
+#### Music Player Interface
+![Music Player Screenshot](/src/main/resources/assets/images/MP3_Player.png)
+
+#### Equalizer Interface
+![Equalizer Screenshot](/src/main/resources/assets/images/Equalizer.png)
 ---
 
 ## **Features**
