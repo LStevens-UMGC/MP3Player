@@ -12,7 +12,7 @@ import javafx.scene.media.MediaPlayer;
 public class EqualizerController {
 
     @FXML
-    private HBox equalizerContainer; // VBox layout to dynamically hold sliders and labels for each equalizer band
+    private HBox equalizerContainer; // HBox layout to dynamically hold sliders and labels for each equalizer band
 
     private Equalizer equalizerModel; // Model containing the equalizer bands and their settings
     private MediaPlayer mediaPlayer; // The MediaPlayer instance to which this equalizer applies
@@ -34,12 +34,16 @@ public class EqualizerController {
             slider.setBlockIncrement(1); // Adjust the slider in increments of 1 dB
             slider.setOrientation(javafx.geometry.Orientation.VERTICAL); // Set the slider to vertical
 
+            // Apply CSS class to the slider
+            slider.getStyleClass().add("slider");
+
+
             // Bind the slider's value to the band's gain property bidirectionally
             band.gainProperty().bindBidirectional(slider.valueProperty());
 
             // Create a label that displays the center frequency of the band (e.g., "32 Hz")
             Label label = new Label(String.format("%.0f Hz", band.getCenterFrequency()));
-            label.setStyle("-fx-alignment: center;"); // Center align the label below the slider
+            label.setStyle("-fx-alignment: center; -fx-text-fill: white;"); // Center align the label below the slider
 
             // Create a VBox to stack the slider and the label vertically
             VBox bandControl = new VBox(5); // Spacing of 5 pixels between slider and label

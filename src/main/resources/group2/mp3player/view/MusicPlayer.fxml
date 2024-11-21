@@ -10,27 +10,30 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextField?>
+
 <VBox
         xmlns="http://javafx.com/javafx/17.0.12"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="group2.mp3player.controller.MusicPlayerController"
-        prefHeight="540"
-        prefWidth="780"
+        prefHeight="560"
+        prefWidth="800"
+        stylesheets="@styles.css"
 >
     <!-- Menu bar -->
     <MenuBar>
         <Menu text="File">
-            <MenuItem text="Add New Song" onAction="#handleOpen"/>
-            <MenuItem text="Add New Songs" onAction= "#handleMassOpen"/>
-            <MenuItem text="Save Song Data" onAction= "#saveSongData"/>
+            <MenuItem text="Add New Song" onAction="#handleOpen" style="-fx-text-fill: #2c3e50;" />
+            <MenuItem text="Add New Songs" onAction="#handleMassOpen" style="-fx-text-fill: #2c3e50;"/>
+            <MenuItem text="Save Song Data" onAction="#saveSongData" style="-fx-text-fill: #2c3e50;"/>
         </Menu>
         <Menu text="View">
-            <MenuItem text="Equalizer"  onAction="#handleOpenEqualizer"/>
-            <MenuItem text="All Songs" onAction = "#viewAllSongs" />
-            <MenuItem text="Song History" onAction = "#handleShowSongHistory" />
+            <MenuItem text="Equalizer" onAction="#handleOpenEqualizer" style="-fx-text-fill: #2c3e50;"/>
+            <MenuItem text="All Songs" onAction="#viewAllSongs" style="-fx-text-fill: #2c3e50;"/>
+            <MenuItem text="Song History" onAction="#handleShowSongHistory" style="-fx-text-fill: #2c3e50;"/>
         </Menu>
     </MenuBar>
 
@@ -38,21 +41,24 @@
     <HBox alignment="CENTER">
         <!-- Playlist list view -->
         <VBox spacing="10" alignment="TOP_CENTER">
-            <TextField fx:id="searchPlaylistField" promptText="Search playlists..." prefHeight="89" prefWidth="10" />
+            <TextField fx:id="searchPlaylistField" promptText="Search playlists..."/>
             <ListView fx:id="playlistListView"/>
             <HBox spacing="5" alignment="CENTER">
+                <Button fx:id="addSongToPlaylistButton" text="Add Song to Playlist"
+                        onAction="#handleAddSongToPlaylist"/>
                 <Button text="Create Playlist" onAction="#handleCreatePlaylist"/>
             </HBox>
-            <Button fx:id="addSongToPlaylistButton" text="Add Song to Playlist" onAction="#handleAddSongToPlaylist"/>
-            <Button fx:id="clearAllPlaylistsButton" text="Clear All Playlists" onAction="#handleClearAllPlayLists"/>
-            <Button fx:id="clearSongHistory"        text="Clear Song Data"  onAction="#handleClearSongHistory"/>
+            <HBox spacing="5" alignment="CENTER">
+                <Button fx:id="clearSongHistory" text="Clear Song Data" onAction="#handleClearSongHistory"/>
+                <Button fx:id="clearAllPlaylistsButton" text="Clear All Playlists" onAction="#handleClearAllPlayLists"/>
+            </HBox>
         </VBox>
 
         <!-- Song list and progress -->
         <VBox prefWidth="550" spacing="10">
-            <TextField fx:id="searchSongsField" promptText="Search songs..." />
+            <TextField fx:id="searchSongsField" promptText="Search songs..."/>
             <TableView fx:id="songTableView">
-                <columns >
+                <columns>
                     <TableColumn fx:id="songNameColumn" text="Name"/>
                     <TableColumn fx:id="artistColumn" text="Artist"/>
                     <TableColumn fx:id="albumColumn" text="Album"/>
@@ -70,11 +76,36 @@
 
             <!-- Controls -->
             <HBox alignment="CENTER" spacing="8">
-                <Button fx:id="prevButton" text="Prev" onAction="#handlePreviousSong"/>
-                <Button fx:id="playPauseButton" text="Play" onAction="#handlePlayPause"/>
-                <Button fx:id="nextButton" text="Next" onAction="#handleNextSong"/>
+                <!-- Previous Button with Icon -->
+                <Button fx:id="prevButton" onAction="#handlePreviousSong" maxWidth="10">
+                    <graphic>
+                        <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
+                            <Image url="@icons/previous.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Play/Pause Button with Icon -->
+                <Button fx:id="playPauseButton" onAction="#handlePlayPause">
+                    <graphic>
+                        <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
+                            <Image url="@icons/play.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Next Button with Icon -->
+                <Button fx:id="nextButton" onAction="#handleNextSong">
+                    <graphic>
+                        <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
+                            <Image url="@icons/next.png"/>
+                        </ImageView>
+                    </graphic>
+                </Button>
+
+                <!-- Volume Control -->
                 <Slider fx:id="volumeSlider"/>
-                <Text text="Volume"/>
+                <Label text="Volume"/>
             </HBox>
         </VBox>
     </HBox>
