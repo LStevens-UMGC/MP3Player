@@ -1,66 +1,159 @@
-# MP3Player
-## Project Overview
-An MP3 player with standard options for the player (pause/play/next/previous/volume control) along
-with a playlist of songs and the ability to change playlists. Settings like volume should have persistence
-across session. The application is developed using Java and JavaFX to allow use on any system with a Java
-runtime environment installed.*
+# MP3 Player
 
-\*Once the Java archive file is compiled after reaching the deployment stage.
+## **Project Overview**
+The MP3 Player is a lightweight, feature-rich music player application built using **Java** and **JavaFX**. It allows users to manage playlists, control playback, and adjust volume settings, all while ensuring a clean and modern user interface. The application is designed with a **Model-View-Controller (MVC)** architecture for better separation of concerns and maintainability.
 
-## Setup Instructions
-1. Ensure the following are running on your system
-    1. Java 23.0
-        1. java --version
-    1. Maven
-        1. mvn --version
-    1. git
-        1. git --version
-1. If they are not, download them
-1. Once downloaded ensure environment variables are set
-    1. Set JAVA_HOME to the java 23.0 directory
-    1. Set MAVEN_HOME to the maven directory
-1. Set path variables
-    1. Add a path to the /bin folder for Java
-    1. Add a path to the /bin folder for Maven
-1. Clone the repository with the command: git clone https://github.com/LStevens-UMGC/MP3Player.git
-1. Open the repository in your IDE
-1. Rune the project with the maven command: javafx: run
+This cross-platform application can run on any system with a compatible **Java Runtime Environment (JRE)** installed. Key features include **persistent settings** across sessions, **dynamic playlist management**, and **support for MP3 media formats**.
 
-## Project Structure
-The project uses a MVC architecture for separation of responsibilities. 
+---
 
-- `src/main/`: Contains the source code.
-- `src/main/java/group2.mp3player/controller`: Contains the controllers .java files.
-- `src/main/java/group2.mp3player/model`: Contains the models .java files.
-- `src/test/`: Contains the test code.
-- `src/test/java/group2.mp3player/controller`: Contains the controllers test .java files.
-- `src/test/java/group2.mp3player/model`: Contains the models test .java files.
-- `src/resources/group2.mp3player/view`: Contains the view in .fxml files.
-- `src/resources/`: Contains other resources.
-- `pom.xml`: Contains the maven resources for project dependencies.
+## **Features**
+- 🎵 **Playback Controls**:
+    - Play, pause, skip to the next song, or return to the previous song.
+    - Adjust the playback position using a progress slider.
 
-## Features
-- **Playback Controls**: Play, pause, next, and previous song controls.
-- **Playlist Management**: Add, remove, and change playlists. Load and save playlists as needed.
-- **Volume Control**: Adjust the volume, which will persist across sessions.
-- **Cross-Platform Compatibility**: Runs on any system with a Java runtime environment.
+- 📋 **Playlist Management**:
+    - Add, remove, and edit playlists.
+    - Load and save playlists for future sessions.
 
-## Usage Instructions
-1. **Adding Songs to the Playlist**: Use file browser to add songs to the playlist display.
-1. **Adding Songs to the Playlist**: Select a playlist and song, then select "Add to playlist" button.
-1. **Saving/Loading Playlists**: Access options to save the current playlist or load a saved one from the menu.
-1. **Volume Persistence**: Volume settings are automatically saved when you close the application and restored when you restart.
+- 🔊 **Volume Control**:
+    - Adjust volume seamlessly using a slider.
+    - Volume preferences persist between application sessions.
 
-## Configuration
-The application may include a configuration file for customizable settings, such as:
-- **Default Volume**: Set the initial volume level.
+- 🌐 **Cross-Platform Compatibility**:
+    - Compatible with all systems running Java 23 or higher.
 
-## Requirements
-- **Java Runtime Environment**: Ensure a Java Runtime Environment is installed on your computer
-- **Supported Media Formats**: Only MP3 files are supported. 
+- 🎛️ **Equalizer**:
+    - Fine-tune audio output with an intuitive equalizer interface.
 
-## Contribution Guide
-All contributions are to be made on a project branch first. Once a feature is developed, a pull
-request is to be sent. Provided there are no merge conflicts, the feature branch will then be
-merged to main.
+- 📁 **Drag-and-Drop Support**:
+    - Easily add MP3 files to your playlists by dragging and dropping them into the application.
 
+---
+
+## **Setup Instructions**
+To set up and run the application, follow these steps:
+
+### **Prerequisites**
+1. Ensure the following software is installed on your system:
+    - **Java 23.0** or higher:
+        - Run `java --version` to check.
+        - [Download Java](https://www.oracle.com/java/technologies/javase-downloads.html) if not installed.
+    - **Maven**:
+        - Run `mvn --version` to check.
+        - [Download Maven](https://maven.apache.org/download.cgi) if not installed.
+    - **Git**:
+        - Run `git --version` to check.
+        - [Download Git](https://git-scm.com/downloads) if not installed.
+
+2. Ensure environment variables are properly configured:
+    - **JAVA_HOME**: Set this to the root directory of your Java installation.
+    - **MAVEN_HOME**: Set this to the root directory of your Maven installation.
+
+3. Update your system's `PATH` variable:
+    - Add the `bin` directory of Java.
+    - Add the `bin` directory of Maven.
+
+---
+
+### **Installation**
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/LStevens-UMGC/MP3Player.git
+   ```
+
+2. Navigate to the project directory:
+   ```bash
+   cd MP3Player
+   ```
+
+3. Open the project in your preferred IDE.
+
+4. Run the project using Maven:
+   ```bash
+   mvn javafx:run
+   ```
+
+---
+
+## **Project Structure**
+The project follows an **MVC architecture** for clear separation of concerns:
+
+```
+src/
+├── main/
+│   ├── java/group2.mp3player/
+│   │   ├── controller/   # Controllers for handling UI interactions
+│   │   ├── model/        # Application data models
+│   │   └── view/         # FXML files for UI design
+│   └── resources/        # Application resources (CSS, icons, etc.)
+├── test/
+│   ├── java/group2.mp3player/
+│   │   ├── controller/   # Unit tests for controllers
+│   │   ├── model/        # Unit tests for models
+pom.xml                   # Maven configuration file for dependencies
+```
+
+---
+
+## **Usage Instructions**
+1. **Add Songs**:
+    - Use the `File > Add New Song` menu to select and load MP3 files into the playlist.
+
+2. **Manage Playlists**:
+    - Create, rename, or delete playlists using the playlist management options.
+
+3. **Playback Controls**:
+    - Use the play, pause, next, and previous buttons to control song playback.
+    - Use the progress slider to skip to a specific position in a song.
+
+4. **Adjust Volume**:
+    - Use the volume slider to adjust playback volume. The application saves this setting for your next session.
+
+5. **Equalizer**:
+    - Open the equalizer using `View > Equalizer` and adjust bass, treble, and mid frequencies for custom sound tuning.
+
+---
+
+## **Requirements**
+- **Java Runtime Environment (JRE)**: Java 23.0 or higher.
+- **Supported File Formats**: MP3.
+- **Maven**: Required for building and running the project.
+
+---
+
+## **Configuration**
+The application can be configured using a `config.json` file (optional). Customizable settings include:
+- **Default Volume Level**: Specify the initial volume when the application starts.
+
+---
+
+## **Contribution Guide**
+We welcome contributions to the MP3 Player project! Please follow these guidelines:
+
+1. **Create a New Branch**:
+    - Develop features or bug fixes on a separate branch.
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Commit Changes**:
+    - Write clear and descriptive commit messages.
+   ```bash
+   git commit -m "Add feature description"
+   ```
+
+3. **Push to GitHub**:
+    - Push your branch to the repository.
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+4. **Submit a Pull Request**:
+    - Open a pull request to merge your changes into the `main` branch.
+    - Ensure your code passes all tests and is reviewed by maintainers.
+
+---
+
+## **License**
+This project is licensed under the MIT License. See the `LICENSE` file for details.
