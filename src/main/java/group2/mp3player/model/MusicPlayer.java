@@ -27,7 +27,7 @@ import java.util.Objects;
  * history and manages UI components related to music playback.
  */
 public class MusicPlayer {
-	private static final MusicPlayer instance = new MusicPlayer();
+	private static MusicPlayer instance = new MusicPlayer();
 	private static final String VOLUME_PREF_KEY = "volume";
 
 	private final ObservableList<Song> songHistory = FXCollections.observableArrayList();
@@ -48,6 +48,9 @@ public class MusicPlayer {
 	 * To obtain an instance of MusicPlayer, use the getInstance() method.
 	 */
 	private MusicPlayer() {
+		if(instance != null) {
+			throw new IllegalStateException("An instance of MusicPlayer is already initialized.");
+		}
 	}
 
 	/**
@@ -69,7 +72,19 @@ public class MusicPlayer {
 	 * @return the singleton instance of MusicPlayer
 	 */
 	public static MusicPlayer getInstance() {
+		if (instance == null) {
+			instance = new MusicPlayer();
+		}
 		return instance;
+	}
+/**
+ * Resets the singleton instance to null
+ *
+ * This method is only for testing purposes and allows the singleton to be reinitialized.
+ * Not to be used in the main production code.
+ */
+	static void resetInstanceForTesting() {
+		instance = null;
 	}
 
 	/**
