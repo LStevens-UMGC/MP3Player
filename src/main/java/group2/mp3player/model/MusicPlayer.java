@@ -10,6 +10,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -234,14 +236,23 @@ public class MusicPlayer {
 				songTitleLabel.setText("Playing: " + selectedSong.getTitle());
 				initializeMediaPlayer(selectedSong);
 				mediaPlayer.play();
-				playPauseButton.setText("Pause");
+
+				// Update Play/Pause Icon to Pause
+				Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause.png")));
+				((ImageView) playPauseButton.getGraphic()).setImage(pauseIcon);
 			}
 		} else if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
 			mediaPlayer.pause();
-			playPauseButton.setText("Play");
+
+			// Update Play/Pause Icon to Play
+			Image playIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/play.png")));
+			((ImageView) playPauseButton.getGraphic()).setImage(playIcon);
 		} else {
 			mediaPlayer.play();
-			playPauseButton.setText("Pause");
+
+			// Update Play/Pause Icon to Pause
+			Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause.png")));
+			((ImageView) playPauseButton.getGraphic()).setImage(pauseIcon);
 		}
 	}
 

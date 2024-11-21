@@ -10,12 +10,13 @@
         xmlns:fx="http://javafx.com/fxml"
         fx:controller="group2.mp3player.controller.EqualizerController"
         spacing="15"
-        style="-fx-padding: 20;"
-        alignment="CENTER">
+        style="-fx-padding: 20; -fx-background-color: linear-gradient(to bottom, rgba(26,188,156,0.67), #2c3e50);"
+        alignment="CENTER"
+>
 
     <!-- Title label for the Equalizer (optional for centering above the sliders) -->
     <VBox alignment="CENTER" spacing="10">
-        <Label text="Equalizer" style="-fx-font-size: 18px;"/>
+        <Label text="Equalizer" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
         <!-- HBox container where sliders and labels will be dynamically added -->
         <HBox fx:id="equalizerContainer" spacing="15" alignment="CENTER"/>
     </VBox>
