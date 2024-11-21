@@ -8,16 +8,32 @@ import group2.mp3player.utils.JsonHandler;
 import group2.mp3player.utils.MetaDataExtractor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -126,22 +142,41 @@ public class MusicPlayerController {
         // Changes to retrive all songs list.
         songTableView.setItems(model.getAllSongs());
 
-        // Initialize model
-        model.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
-        model.initialize();
+		// Initialize model
+		model.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
+		model.initialize();
+		ContextMenu action = new ContextMenu();
+		MenuItem addToPlaylist = new MenuItem("Add To Playlist");
+		MenuItem removeFromPlaylist = new MenuItem("Remove From Playlist");
+		action.getItems().add(addToPlaylist);
+		action.getItems().add(removeFromPlaylist);
 
-        songTableView.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-            Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
-                if (selectedSong != null) {
-                    playlistLabel.setText("");
-                    songTitleLabel.setText("Viewing : " + selectedSong.getTitle());
-                    model.playSongFromHistory(selectedSong);
-                    setupCurrentTimeHandler();
-                    setupAutoPlayHandler();
-                }
-            }
-        });
+		songTableView.setOnMouseClicked(event -> {
+			if (event.getClickCount() == 2) {
+				Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
+				if (selectedSong != null) {
+					playlistLabel.setText("");
+					songTitleLabel.setText("Viewing : " + selectedSong.getTitle());
+					model.playSongFromHistory(selectedSong);
+					setupCurrentTimeHandler();
+					setupAutoPlayHandler();
+				}
+			}
+			// context menu for added and removing songs from playlist.
+			if (event.getButton() == MouseButton.SECONDARY) {
+				action.show(songTableView, event.getScreenX(), event.getScreenY());
+
+			}
+
+			// context action to add song to playlist;
+			addToPlaylist.setOnAction(a -> {
+				handleAddSongToPlaylist();
+			});
+			// context action to remove song from playlist.
+			removeFromPlaylist.setOnAction(a -> {
+				handleRemoveSongFromPlaylist();
+			});
+		});
 
         // Set up the playlist list view
         playlistListView.setItems(FXCollections.observableArrayList());
@@ -235,15 +270,45 @@ public class MusicPlayerController {
             if (selectedPlaylist != null) {
                 selectedPlaylist.addSong(selectedSong);
 
-                JsonHandler.savePlaylistsToJson(model.getPlaylists(), "playlists.json");
-                System.out.println("Song added to playlist and saved to JSON.");
-            } else {
-                System.out.println("Selected playlist not found.");
-            }
-        } else {
-            System.out.println("No song or playlist selected.");
-        }
-    }
+
+				JsonHandler.savePlaylistsToJson(model.getPlaylists(), "playlists.json");
+				System.out.println("Song added to playlist and saved to JSON.");
+			} else {
+				System.out.println("Selected playlist not found.");
+			}
+		} else {
+			System.out.println("No song or playlist selected.");
+		}
+		if (selectedPlaylistName != null) {
+			loadPlaylist(selectedPlaylistName);
+		}
+	}
+
+	/**
+	 * Removes the selected item from the playlist, works the same way the add
+	 * function does. Reloads the playlist.
+	 */
+	private void handleRemoveSongFromPlaylist() {
+		Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
+		String selectedPlaylistName = playlistListView.getSelectionModel().getSelectedItem();
+		if ((selectedSong != null) && (selectedPlaylistName != null)) {
+			Playlist selectedPlaylist = model.getPlaylists().stream()
+					.filter(playlist -> playlist.getName().equals(selectedPlaylistName)).findFirst().orElse(null);
+			if (selectedPlaylist != null) {
+				selectedPlaylist.removeSpecifiedSong(selectedSong);
+
+				JsonHandler.savePlaylistsToJson(model.getPlaylists(), "playlists.json");
+				System.out.println("Song removed from playlist and saved to JSON.");
+			} else {
+				System.out.println("Selected playlist not found.");
+			}
+		} else {
+			System.out.println("No song or playlist selected.");
+		}
+		if (selectedPlaylistName != null) {
+			loadPlaylist(selectedPlaylistName);
+		}
+	}
 
     /**
      * Handles the action of opening an MP3 file, extracting its metadata, and updating the song history.
