@@ -1,12 +1,11 @@
 package group2.mp3player.model;
 
-import group2.mp3player.model.MusicPlayer;
-import group2.mp3player.model.Song;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,15 +26,19 @@ class MusicPlayerTest {
     void setUp() {
         musicPlayer = MusicPlayer.getInstance();
     }
-    //Test MP1
+
+    //Test case # MP1
     @Test
     void testSingletonInstance() {
+        //Purpose: Checks that calls to MusicPlayer.getInstance(); returns the same instance
         MusicPlayer anotherInstance = MusicPlayer.getInstance();
         assertSame(musicPlayer, anotherInstance, "Expected the same instance of MusicPlayer");
     }
-    //Test MP2
+
+    //Test case # MP2
     @Test
     void testSingletonInstanceWhenNull() {
+        //Purpose: Checks the singleton instance is null before initialization
         MusicPlayer.resetInstanceForTesting();
         assertNull(getPrivateInstance(), "Instance should be null before initialization");
 
@@ -43,6 +46,7 @@ class MusicPlayerTest {
 
         assertNotNull(musicPlayer, "MusicPlayer instance is not null after getInstance() is called");
     }
+
     // Helper method for test MP2
     private MusicPlayer getPrivateInstance() {
         try {
@@ -55,9 +59,10 @@ class MusicPlayerTest {
         }
     }
 
-    //Test MP3
+    //Test case # MP3
     @Test
     void testSingletonPreventsReflectionInstatiation() {
+        //Purpose: Checks that the singleton design prevents the creation of a second instance
         MusicPlayer firstInstance = MusicPlayer.getInstance();
 
         //Creates a new instance using reflection
@@ -71,30 +76,34 @@ class MusicPlayerTest {
         assertEquals("An instance of MusicPlayer is already initialized.", cause.getMessage(), "Unexpected exception message");
     }
 
-//Test MP4
-@Test
-void testSetLabelsAndProgressBar() {
-    //Gets JavaFX ready for testing
-    Platform.startup(()->{});
-    // Had issues with JavaFX threading rules in the test only
-    Platform.runLater(()-> {
-        Label songTitleLabel = new Label();
-        Label totalTimeLabel = new Label();
-        Slider progressBar = new Slider();
+    //Test case # MP4
+    @Test
+    void testSetLabelsAndProgressBar() {
+        //Purpose: Check that the Label and slider are set corectly in MediaPlayer when setLabelsandProgressBar is called
+        //Gets JavaFX ready for testing
+        Platform.startup(() -> {
+        });
+        // Had issues with JavaFX threading rules in the test only
+        Platform.runLater(() -> {
+            Label songTitleLabel = new Label();
+            Label totalTimeLabel = new Label();
+            Slider progressBar = new Slider();
 
-        musicPlayer.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
+            musicPlayer.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
 
-//        assertEquals(songTitleLabel, musicPlayer.songTitleLabel);
-//        assertEquals(totalTimeLabel, musicPlayer.totalTimeLabel);
-//        assertEquals(progressBar, musicPlayer.progressBar);
-    });
-}
+            assertEquals(songTitleLabel, musicPlayer.songTitleLabel);
+            assertEquals(totalTimeLabel, musicPlayer.totalTimeLabel);
+            assertEquals(progressBar, musicPlayer.progressBar);
+        });
+    }
 
-//Test case # MP5
-@Test
-void testSetLabelsAndProgressBarHandlesNullInputs() {
-        Platform.startup(()->{});
-        Platform.runLater(()-> {
+    //Test case # MP5
+    @Test
+    void testSetLabelsAndProgressBarHandlesNullInputs() {
+        //Purpose: Checks if the label and slider update when the setLabelAndProgressBar method is called
+        Platform.startup(() -> {
+        });
+        Platform.runLater(() -> {
 
             Label songTitleLabel = new Label("Old Title");
             Label totalTimeLabel = new Label("00:00");
@@ -108,13 +117,15 @@ void testSetLabelsAndProgressBarHandlesNullInputs() {
             assertNull(totalTimeLabel.getText(), "totalTimeLabel text to be null");
             assertEquals(0, progressBar.getValue(), "progressBar's value to reset to 0");
         });
-}
-//Test case # MP6
-@Test
-void testSetLabelsAndProgressBarUpdatesValues() {
-    // Purpose: Verify that previously set Label and Slider objects are updated to new inputs
-        Platform.startup(()->{});
-        Platform.runLater(()-> {
+    }
+
+    //Test case # MP6
+    @Test
+    void testSetLabelsAndProgressBarUpdatesValues() {
+        // Purpose: Verify that previously set Label and Slider objects are updated to new inputs
+        Platform.startup(() -> {
+        });
+        Platform.runLater(() -> {
             //Old values
             Label oldTitleLabel = new Label("Old Title");
             Label oldTimeLabel = new Label("00:00");
@@ -127,12 +138,54 @@ void testSetLabelsAndProgressBarUpdatesValues() {
             Label newTimeLabel = new Label("03:45");
             Slider newProgressBar = new Slider(0, 100, 75);
 
-                assertEquals(newTitleLabel, musicPlayer.songTitleLabel, "Old title label to be updated to new title label");
-                assertEquals(newTimeLabel,  musicPlayer.totalTimeLabel, "Old time label to be updated to new time label");
-                assertEquals(newProgressBar, musicPlayer.progressBar, "Old progress bar to be updated to new progress bar");
+            assertEquals(newTitleLabel, musicPlayer.songTitleLabel, "Old title label to be updated to new title label");
+            assertEquals(newTimeLabel, musicPlayer.totalTimeLabel, "Old time label to be updated to new time label");
+            assertEquals(newProgressBar, musicPlayer.progressBar, "Old progress bar to be updated to new progress bar");
 
         });
-}
+    }
+
+    //Test case # MP7
+    @Test
+    void testSetVolumeSetsTheVolume() {
+        //Purpose: The setVolume method correctly adjusts the volume of the MediaPlayer
+        Platform.startup(() -> {
+        });
+        Platform.runLater(() -> {
+            String path = getClass().getResource("/group2/mp3player/AudioTestFiles/1KHz.mp3").toExternalForm();
+
+            Media media = new Media(path);
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+
+            musicPlayer.setMediaPlayer(mediaPlayer);
+
+            //Set the volume to 0.5
+            musicPlayer.setVolume(0.5);
+
+            assertEquals(0.5, mediaPlayer.getVolume(), 0.01, "Volume to be set to 0.5");
+        });
+    }
+
+    //Test case #MP8
+    @Test
+    void testSetVolumeNoInvalidValues(){
+        //Purpose: Checks if an exception is thrown when an invalid value is added
+        Platform.startup(() -> {});
+        Platform.runLater(() -> {
+            String path = getClass().getResource("/group2/mp3player/AudioTestFiles/1KHz.mp3").toExternalForm();
+            Media media = new Media(path);
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+
+            musicPlayer.setMediaPlayer(mediaPlayer);
+
+            musicPlayer.setVolume(-1.5);
+
+            assertTrue(mediaPlayer.getVolume() >= 0.0 && mediaPlayer.getVolume() <= 1.0);
+        });
+
+    }
+
+
 
     @Test
     void testAddSongToHistory() {
