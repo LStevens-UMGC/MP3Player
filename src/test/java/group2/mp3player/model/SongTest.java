@@ -78,4 +78,15 @@ class SongTest {
         assertEquals(1, result.size());
         assertEquals("Test Title", result.get(0).getTitle());
     }
+
+    @Test
+    void testSongDefaultConstructor(){
+        Song song = new Song();
+
+        assertNull(song.getTitle(), "Default constructor sets string variables to null");
+        assertNull(song.getArtist(), "Default constructor sets string variables to null");
+        assertNull(song.getAlbum(), "Default constructor sets string variables to null");
+        assertNull(song.getYear(), "Default constructor sets string variables to null");
+        assertNull(song.getFilePath(), "Default constructor sets string variables to null");
+    }
 }
