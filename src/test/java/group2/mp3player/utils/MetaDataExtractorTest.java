@@ -46,7 +46,7 @@ class MetaDataExtractorTest {
         Song song = new Song(title, artist, album, year, testFile.toURI().toString());
 
 
-       //when(audioFile.getTag()).thenReturn(tag);
+        //when(audioFile.getTag()).thenReturn(tag);
 
         // Mock AudioFileIO to return our mock AudioFile
         //Mockito.mockStatic(AudioFileIO.class).when(() -> AudioFileIO.read(testFile)).thenReturn(audioFile);
