@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -86,6 +87,34 @@ class PlaylistTest {
 
         List<Playlist> searchResults = playlist1.searchPlaylists(playlists, "asdfasdf");
         assertEquals(0, searchResults.size());
-        assertNull(searchResults);
+
+    }
+
+    @Test
+    void testEmptySearch(){
+        Playlist playlist1 = new Playlist("Empty Search");
+
+        List<Playlist> playlists = new ArrayList<>();
+
+        List<Playlist> searchResults = playlist1.searchPlaylists(playlists, "");
+        assertEquals(playlist1.getSongs().size(), searchResults.size());
+    }
+
+    @Test
+    void testPlaylistSongRemoval(){
+        Song song1 = new Song("Title1", "Artist1", "Album1", "2023", "/path/to/file1.mp3");
+        Song song2 = new Song("Title2", "Artist2", "Album2", "2023", "/path/to/file2.mp3");
+
+        playlist.addSong(song1);
+        playlist.addSong(song2);
+
+        playlist.removeSpecifiedSong(song1);
+        ObservableList<Song> songs = playlist.getSongs();
+
+        System.out.println(songs);
+
+        assertNotEquals("Title1", songs.getFirst().getTitle());
+
+        assertEquals("Title2", songs.getFirst().getTitle());
     }
 }
