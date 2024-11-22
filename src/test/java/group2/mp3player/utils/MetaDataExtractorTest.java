@@ -3,17 +3,12 @@ package group2.mp3player.utils;
 import group2.mp3player.model.Song;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -23,103 +18,72 @@ class MetaDataExtractorTest {
 
     @Test
     void testExtractMetadata_withValidMetadata() throws Exception {
-        File testFile = new File ("src/main/resources/group2/mp3player/AudioTestFiles/1KHz.mp3");
+        // Mock file and metadata
+        File mockFile = new File("test.mp3");
 
-        if (testFile.exists()) {
-            System.out.println("File exists!");
-        } else {
-            System.out.println("File does not exist.");
-        }
+        AudioFile mockAudioFile = (AudioFile)Mockito.mock(AudioFile.class);
+        Tag mockTag = (Tag)Mockito.mock(Tag.class);
 
-        try {
-            AudioFile audioFile = AudioFileIO.read(testFile);
-            Tag tag = audioFile.getTag();
+        // Set up expected metadata
+        when(mockTag.getFirst(FieldKey.TITLE)).thenReturn("Test Title");
+        when(mockTag.getFirst(FieldKey.ARTIST)).thenReturn("Test Artist");
+        when(mockTag.getFirst(FieldKey.ALBUM)).thenReturn("Test Album");
+        when(mockTag.getFirst(FieldKey.YEAR)).thenReturn("2024");
 
-            String title = tag != null ? tag.getFirst(FieldKey.TITLE) : "Unknown";
-            String artist = tag != null ? tag.getFirst(FieldKey.ARTIST) : "Unknown";
-            String album = tag != null ? tag.getFirst(FieldKey.ALBUM) : "Unknown";
-            String year = tag != null ? tag.getFirst(FieldKey.YEAR) : "Unknown";
+        when(mockAudioFile.getTag()).thenReturn(mockTag);
 
-            Song newSong = new Song(title, artist, album, year, testFile.toURI().toString());
+        // Mock AudioFileIO to return our mock AudioFile
+        Mockito.mockStatic(AudioFileIO.class).when(() -> AudioFileIO.read(mockFile)).thenReturn(mockAudioFile);
 
-            System.out.println(newSong.getTitle() + " " + newSong.getArtist() + " " + newSong.getAlbum() + " " + newSong.getYear());
+        // Run the method under test
+        Song result = MetaDataExtractor.extractMetadata(mockFile);
 
-            assertNotNull(newSong);
-            assertEquals("Test", newSong.getTitle());
-            assertEquals("Test", newSong.getArtist());
-            assertEquals("Test", newSong.getAlbum());
-            assertEquals("2024", newSong.getYear());
-            assertEquals(testFile.toURI().toString(), newSong.getFilePath());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error extracting metadata.");
-
-        }
+        // Assertions
+        assertNotNull(result);
+        assertEquals("Test Title", result.getTitle());
+        assertEquals("Test Artist", result.getArtist());
+        assertEquals("Test Album", result.getAlbum());
+        assertEquals("2024", result.getYear());
+        assertEquals(mockFile.toURI().toString(), result.getFilePath());
     }
 
     @Test
     void testExtractMetadata_withNoMetadata() throws Exception {
-        File testFile = new File ("src/main/resources/group2/mp3player/AudioTestFiles/2KHz.mp3");
+        // Mock file with no metadata
+        File mockFile = new File("test.mp3");
 
-        if (testFile.exists()) {
-            System.out.println("File exists!");
-        } else {
-            System.out.println("File does not exist.");
-        }
+        AudioFile mockAudioFile = mock(AudioFile.class);
 
-        try {
-            AudioFile audioFile = AudioFileIO.read(testFile);
-            Tag tag = audioFile.getTag();
+        // No tag associated with the file
+        when(mockAudioFile.getTag()).thenReturn(null);
 
-            String title = tag != null ? tag.getFirst(FieldKey.TITLE) : "Unknown";
-            String artist = tag != null ? tag.getFirst(FieldKey.ARTIST) : "Unknown";
-            String album = tag != null ? tag.getFirst(FieldKey.ALBUM) : "Unknown";
-            String year = tag != null ? tag.getFirst(FieldKey.YEAR) : "Unknown";
+        // Mock AudioFileIO to return our mock AudioFile
+        Mockito.mockStatic(AudioFileIO.class).when(() -> AudioFileIO.read(mockFile)).thenReturn(mockAudioFile);
 
-            Song newSong = new Song(title, artist, album, year, testFile.toURI().toString());
+        // Run the method under test
+        Song result = MetaDataExtractor.extractMetadata(mockFile);
 
-            System.out.println(newSong.getTitle() + " " + newSong.getArtist() + " " + newSong.getAlbum() + " " + newSong.getYear());
-
-            assertNotNull(newSong);
-            assertEquals("Unknown", newSong.getTitle());
-            assertEquals("Unknown", newSong.getArtist());
-            assertEquals("Unknown", newSong.getAlbum());
-            assertEquals("Unknown", newSong.getYear());
-            assertEquals(testFile.toURI().toString(), newSong.getFilePath());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error extracting metadata.");
-
-        }
-
+        // Assertions for default values
+        assertNotNull(result);
+        assertEquals("Unknown", result.getTitle());
+        assertEquals("Unknown", result.getArtist());
+        assertEquals("Unknown", result.getAlbum());
+        assertEquals("Unknown", result.getYear());
+        assertEquals(mockFile.toURI().toString(), result.getFilePath());
     }
 
     @Test
     void testExtractMetadata_withIOException() {
         // Mock a file that throws an exception when read
-        //File mockFile = new File("test.mp3");
-        try {
-            File testFile = new File("test.mp3");
-            if (testFile.createNewFile()) {
-                System.out.println("File created: " + testFile.getName());
-            } else {
-                System.out.println("File already exists.");
-            }
-            try {
-                Song result = MetaDataExtractor.extractMetadata(testFile);
-                assertNull(result, "Expected null result when an exception occurs");
-                AudioFileIO.read(testFile);
-                testFile.delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("File read Error");
-            }
+        File mockFile = new File("test.mp3");
 
-        }catch(Exception e){
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
+        // Simulate an IOException when reading the file
+        Mockito.mockStatic(AudioFileIO.class).when(() -> AudioFileIO.read(mockFile)).thenThrow(new RuntimeException("File read error"));
 
+        // Run the method under test
+        Song result = MetaDataExtractor.extractMetadata(mockFile);
 
+        // Assertions to check handling of exceptions
+        assertNull(result, "Expected null result when an exception occurs");
     }
 }
