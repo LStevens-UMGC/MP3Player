@@ -103,6 +103,9 @@ public class MusicPlayerController {
     private Button prevButton;
 
     @FXML
+    private Button randomizeButton;
+
+    @FXML
     private Button clearPlaylistButton;
 
     @FXML
@@ -450,13 +453,20 @@ public class MusicPlayerController {
         Song currentSong = songTableView.getSelectionModel().getSelectedItem();
         ArrayList<Song> songList = new ArrayList<>(songTableView.getItems());
         Song nextSong = new Song();
-        if (songList.indexOf(currentSong) < songList.size() - 1) {
-            songTableView.getSelectionModel().clearAndSelect(songTableView.getSelectionModel().getSelectedIndex() + 1);
-            nextSong = songTableView.getSelectionModel().getSelectedItem();
+        if(!model.getRandomStatus()){
+            if (songList.indexOf(currentSong) < songList.size() - 1) {
+                songTableView.getSelectionModel().clearAndSelect(songTableView.getSelectionModel().getSelectedIndex() + 1);
+                nextSong = songTableView.getSelectionModel().getSelectedItem();
 
-        } else if (songList.indexOf(currentSong) == songList.size() - 1) {
-            songTableView.getSelectionModel().clearAndSelect(0);
-            nextSong = songTableView.getSelectionModel().getSelectedItem();
+            } else if (songList.indexOf(currentSong) == songList.size() - 1) {
+                songTableView.getSelectionModel().clearAndSelect(0);
+                nextSong = songTableView.getSelectionModel().getSelectedItem();
+            }
+        }
+        else{
+            int randomIndex = (int) (Math.random() * songList.size());
+            nextSong = songList.get(randomIndex);
+            songTableView.getSelectionModel().clearAndSelect(randomIndex);
         }
         playlistLabel.setText(""); // Setting song title display
         songTitleLabel.setText("Viewing : " + nextSong.getTitle()); //setting song title display
@@ -783,6 +793,10 @@ public class MusicPlayerController {
                 return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
             }
         }
+    }
+
+    public void toggleRandomize() {
+        model.toggleRandomize();
     }
 
 

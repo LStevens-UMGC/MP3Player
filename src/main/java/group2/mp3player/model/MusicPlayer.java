@@ -37,6 +37,7 @@ public class MusicPlayer {
 	private static final String SONG_HISTORY_FILE = "songHistory.json";
 	private static final String ALL_SONGS_FILE = "allSongs.json";
 	private MediaPlayer mediaPlayer;
+	private boolean randomToggle;
 
 	Label songTitleLabel;
 	Label totalTimeLabel;
@@ -172,6 +173,10 @@ public class MusicPlayer {
 	public void setVolume(double volume){
 		mediaPlayer.setVolume(volume);
 		saveVolumePreference(volume);
+	}
+
+	public boolean getRandomStatus(){
+		return randomToggle;
 	}
 
 	/**
@@ -387,5 +392,16 @@ public class MusicPlayer {
 
 		return playlistNames;
 	}
+
+	/**
+	 * Toggles the randomize boolean which affects if the next song is the next
+	 * in the list or a random selection.
+	 */
+	public void toggleRandomize() {
+//		System.out.println("Before toggle: " + randomToggle);
+		randomToggle = !randomToggle;
+//		System.out.println("After toggle: " + randomToggle);
+	}
+
 }
 
