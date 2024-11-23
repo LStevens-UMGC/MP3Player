@@ -161,6 +161,8 @@ public class MusicPlayerController {
 					playlistLabel.setText("");
 					songTitleLabel.setText("Viewing : " + selectedSong.getTitle());
 					model.playSongFromHistory(selectedSong);
+                    Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause.png")));
+                    ((ImageView) playPauseButton.getGraphic()).setImage(pauseIcon);
 					setupCurrentTimeHandler();
 					setupAutoPlayHandler();
 				}
