@@ -8,13 +8,12 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -26,8 +25,16 @@ class MusicPlayerTest {
 
     private MusicPlayer musicPlayer;
 
+    static {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.startup(() -> {
+            });
+        }
+    }
+
     @BeforeEach
     void setUp() {
+
         musicPlayer = MusicPlayer.getInstance();
     }
 
@@ -84,9 +91,6 @@ class MusicPlayerTest {
     @Test
     void testSetLabelsAndProgressBar() {
         //Purpose: Check that the Label and slider are set corectly in MediaPlayer when setLabelsandProgressBar is called
-        //Gets JavaFX ready for testing
-        Platform.startup(() -> {
-        });
         // Had issues with JavaFX threading rules in the test only
         Platform.runLater(() -> {
             Label songTitleLabel = new Label();
@@ -105,8 +109,6 @@ class MusicPlayerTest {
     @Test
     void testSetLabelsAndProgressBarHandlesNullInputs() {
         //Purpose: Checks if the label and slider update when the setLabelAndProgressBar method is called
-        Platform.startup(() -> {
-        });
         Platform.runLater(() -> {
 
             Label songTitleLabel = new Label("Old Title");
@@ -127,8 +129,6 @@ class MusicPlayerTest {
     @Test
     void testSetLabelsAndProgressBarUpdatesValues() {
         // Purpose: Verify that previously set Label and Slider objects are updated to new inputs
-        Platform.startup(() -> {
-        });
         Platform.runLater(() -> {
             //Old values
             Label oldTitleLabel = new Label("Old Title");
@@ -153,8 +153,6 @@ class MusicPlayerTest {
     @Test
     void testSetVolumeSetsTheVolume() {
         //Purpose: The setVolume method correctly adjusts the volume of the MediaPlayer
-        Platform.startup(() -> {
-        });
         Platform.runLater(() -> {
             String path = getClass().getResource("/group2/mp3player/AudioTestFiles/1KHz.mp3").toExternalForm();
 
@@ -174,7 +172,6 @@ class MusicPlayerTest {
     @Test
     void testSetVolumeNoInvalidValues(){
         //Purpose: Checks if an exception is thrown when an invalid value is added
-        Platform.startup(() -> {});
         Platform.runLater(() -> {
             String path = getClass().getResource("/group2/mp3player/AudioTestFiles/1KHz.mp3").toExternalForm();
             Media media = new Media(path);
@@ -192,7 +189,6 @@ class MusicPlayerTest {
     @Test
     void testSaveVolumeAndLoadVolumePreference(){
         //Purpose: Checks that the save volume values are retrieved correctly
-        Platform.startup(() -> {});
         Platform.runLater(() -> {
             double savedVolume = 0.5;
             musicPlayer.saveVolumePreference(savedVolume);
@@ -216,7 +212,6 @@ class MusicPlayerTest {
     void testLoadVolumePreferenceReturnsDefaultValue(){
         //Purpose: Checks if the loadVolumePreference method returns the default value
         //when no preferences are saved.
-        Platform.startup(() -> {});
         Platform.runLater(() -> {
             //Clear any saved volumes
             Preferences preferences = Preferences.userNodeForPackage(MusicPlayer.class);
@@ -232,7 +227,6 @@ class MusicPlayerTest {
     @Test
     void testSaveVolumePreferencesPreviousSave(){
         //Purpose: Checks that the new save value overwrites the previously saved value
-        Platform.startup(() -> {});
         Platform.runLater(() -> {
 
             double oldVolume = 0.3;
@@ -309,9 +303,6 @@ class MusicPlayerTest {
     @Test
     void testHandlePlayPauseWhenMediaPlayerIsNull(){
       //Purpose: Checks when media player is null
-        if (!Platform.isFxApplicationThread()) {
-            Platform.startup(() -> {});
-        }
         Platform.runLater(() -> {
             Button playPauseButton = new Button();
             playPauseButton.setGraphic(new ImageView());
@@ -328,10 +319,7 @@ class MusicPlayerTest {
     //Test case #MP16
     @Test
     void testHandlePlayPauseMediaAndUpdate(){
-        //Purpose: Checks that handlePlayPause method pauses the media and the button test updates
-        if (!Platform.isFxApplicationThread()) {
-            Platform.startup(() -> {});
-        }
+        //Purpose: Checks that handlePlayPause method pauses the media and the button text updates to Play
         Platform.runLater(() -> {
             Button playPauseButton = new Button("Pause");
             playPauseButton.setGraphic(new ImageView());
@@ -343,17 +331,35 @@ class MusicPlayerTest {
             when(mediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
 
             musicPlayer.handlePlayPause(null, playPauseButton);
-            //Check
+
+            //Check that mediaPlayer.pause was called
             verify(mediaPlayer, times(1)).pause();
 
             assertEquals("Play", playPauseButton.getText(), "Expected playPauseButton text to update to 'Play' after pausing.");
-
-
             verify(mediaPlayer, times(1)).pause();
-
 
         });
     }
+
+    //Test case #MP17
+    @Test
+    void testHandlePlayPausePlayMediaAndUpdate(){
+        //Purpose: Checks that playback resumes and the button text updates to pause
+        Platform.runLater(() -> {
+            Button playPauseButton = new Button("Play");
+            playPauseButton.setGraphic(new ImageView());
+            //Mock the media player
+            MediaPlayer mediaPlayer = mock(MediaPlayer.class);
+            when(mediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PAUSED);
+
+            musicPlayer.handlePlayPause(null, playPauseButton);
+            verify(mediaPlayer, times(1)).play();
+            assertEquals("Pause", playPauseButton.getText(), "Expected playPauseButton text to update to 'Pause' after resuming playback.");
+        });
+
+    }
+
+
 
     @Test
     void testHandlePlayPauseWithNoMediaPlayer() {
