@@ -28,7 +28,7 @@ import java.util.Objects;
  */
 public class MusicPlayer {
 	private static MusicPlayer instance = new MusicPlayer();
-	private static final String VOLUME_PREF_KEY = "volume";
+	static final String VOLUME_PREF_KEY = "volume";
 
 	private final ObservableList<Song> songHistory = FXCollections.observableArrayList();
 	private final ObservableList<Song> allSongs = FXCollections.observableArrayList();

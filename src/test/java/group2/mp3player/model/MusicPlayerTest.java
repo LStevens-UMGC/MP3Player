@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +14,11 @@ import org.mockito.Mockito;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
+import static group2.mp3player.model.MusicPlayer.VOLUME_PREF_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -184,8 +188,102 @@ class MusicPlayerTest {
         });
 
     }
+//Test case # MP9
+    @Test
+    void testSaveVolumeAndLoadVolumePreference(){
+        //Purpose: Checks that the save volume values are retrieved correctly
+        Platform.startup(() -> {});
+        Platform.runLater(() -> {
+            double savedVolume = 0.5;
+            musicPlayer.saveVolumePreference(savedVolume);
+
+            double modifyVolume = 0.54;
+            musicPlayer.saveVolumePreference(modifyVolume);
 
 
+            double retrieveVolume = musicPlayer.loadVolumePreference();
+
+            assertEquals(modifyVolume, retrieveVolume, 0.01);
+            musicPlayer.saveVolumePreference(savedVolume);
+            retrieveVolume = musicPlayer.loadVolumePreference();
+            assertEquals(savedVolume, retrieveVolume, 0.01);
+
+        });
+    }
+
+    //Test Case # MP10
+    @Test
+    void testLoadVolumePreferenceReturnsDefaultValue(){
+        //Purpose: Checks if the loadVolumePreference method returns the default value
+        //when no preferences are saved.
+        Platform.startup(() -> {});
+        Platform.runLater(() -> {
+            //Clear any saved volumes
+            Preferences preferences = Preferences.userNodeForPackage(MusicPlayer.class);
+            preferences.remove(VOLUME_PREF_KEY);
+
+            double defaultVolume = musicPlayer.loadVolumePreference();
+
+            assertEquals(1.0, defaultVolume, 0.01);
+        });
+    }
+
+    //Test cases # MP11
+    @Test
+    void testSaveVolumePreferencesPreviousSave(){
+        //Purpose: Checks that the new save value overwrites the previously saved value
+        Platform.startup(() -> {});
+        Platform.runLater(() -> {
+
+            double oldVolume = 0.3;
+            musicPlayer.saveVolumePreference(oldVolume);
+
+            double newVolume = 0.7;
+            musicPlayer.saveVolumePreference(newVolume);
+
+            double retrieveVolume = musicPlayer.loadVolumePreference();
+            assertEquals(newVolume, retrieveVolume, 0.01);
+
+        });
+    }
+
+    //Test case # MP12
+    @Test
+    void testLoadPlaylist() {
+        //Checks that when the loadPlaylist method is called for a playlist a non-null result is returned
+        musicPlayer.createPlaylist("Test Playlist");
+
+        ObservableList<Song> songs = musicPlayer.loadPlaylist("Test Playlist");
+        assertNotNull(songs, "Expected non-null result for existing playlist");
+    }
+
+    //Test case #MP13
+    @Test
+    void testLoadPlaylistWhenPlaylistNameDoesNotExist() {
+        //Purpose: loadPlaylist method returns null when the playlist name does not exist
+        //Clear Playlists
+        musicPlayer.getPlaylists().clear();
+        //Check the playlist list is empty
+        assertTrue(musicPlayer.getPlaylists().isEmpty(), "Expected playlists to be empty before the test.");
+
+        //Input of a playlist name that does not exist
+        ObservableList<Song> songs = musicPlayer.loadPlaylist("Test playlist");
+
+        //Assert that the expected result is null
+        assertNull(songs, "Expected loadPlaylist to return null for a non-existing playlist name.");
+    }
+
+    //Test case #MP14
+    @Test
+    void testLoadPlaylistWithNullName() {
+        //Purpose: Checks that loadPlaylist handles a null playlist name
+        //Load a playlist with a null name
+        ObservableList<Song> songs = musicPlayer.loadPlaylist(null);
+
+        assertNull(songs, "Expected loadPlaylist to return null for a null playlist name.");
+    }
+
+    //Test case # MP15
 
     @Test
     void testAddSongToHistory() {
@@ -196,14 +294,6 @@ class MusicPlayerTest {
         assertTrue(songHistory.contains(song), "Song should be added to song history");
     }
 
-    @Test
-    void testLoadPlaylist() {
-        // Assuming we have a playlist created and added to the MusicPlayer instance
-        musicPlayer.createPlaylist("Test Playlist");
-
-        ObservableList<Song> songs = musicPlayer.loadPlaylist("Test Playlist");
-        assertNotNull(songs, "Expected non-null result for existing playlist");
-    }
 
     @Test
     void testSearchUpdatePlaylistView() {
@@ -213,6 +303,56 @@ class MusicPlayerTest {
         List<String> searchResults = musicPlayer.searchUpdatePlaylistView("Rock");
         assertEquals(1, searchResults.size());
         assertEquals("Rock Classics", searchResults.get(0));
+    }
+
+    //Test Case #MP15
+    @Test
+    void testHandlePlayPauseWhenMediaPlayerIsNull(){
+      //Purpose: Checks when media player is null
+        if (!Platform.isFxApplicationThread()) {
+            Platform.startup(() -> {});
+        }
+        Platform.runLater(() -> {
+            Button playPauseButton = new Button();
+            playPauseButton.setGraphic(new ImageView());
+
+            Song selectedSong = new Song("Test Title", "Test Artist", "Test Album", "2023", "group2/mp3player/AudioTestFiles/1KHz.mp3");
+
+            assertNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be null initially.");
+            musicPlayer.handlePlayPause(selectedSong, playPauseButton);
+
+            assertNotNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be initialized.");
+        });
+    }
+
+    //Test case #MP16
+    @Test
+    void testHandlePlayPauseMediaAndUpdate(){
+        //Purpose: Checks that handlePlayPause method pauses the media and the button test updates
+        if (!Platform.isFxApplicationThread()) {
+            Platform.startup(() -> {});
+        }
+        Platform.runLater(() -> {
+            Button playPauseButton = new Button("Pause");
+            playPauseButton.setGraphic(new ImageView());
+
+            //Mock media player
+            MediaPlayer mediaPlayer = mock(MediaPlayer.class);
+
+            //Check that it returns the status as Playing
+            when(mediaPlayer.getStatus()).thenReturn(MediaPlayer.Status.PLAYING);
+
+            musicPlayer.handlePlayPause(null, playPauseButton);
+            //Check
+            verify(mediaPlayer, times(1)).pause();
+
+            assertEquals("Play", playPauseButton.getText(), "Expected playPauseButton text to update to 'Play' after pausing.");
+
+
+            verify(mediaPlayer, times(1)).pause();
+
+
+        });
     }
 
     @Test
