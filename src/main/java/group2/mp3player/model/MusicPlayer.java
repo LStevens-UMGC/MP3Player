@@ -207,8 +207,6 @@ public class MusicPlayer {
 		return preferences.getDouble(VOLUME_PREF_KEY, 1.0);  // Default to 1.0 if no setting is found
 	}
 
-
-
 	/**
 	 * Loads songs from a selected playlist.
 	 *
@@ -307,7 +305,6 @@ public class MusicPlayer {
         }
     }
 
-
 /**
  * Initializes the media player with the selected song and starts playback.
  *
@@ -368,9 +365,11 @@ public class MusicPlayer {
 	 * @param name the name of the new playlist to be created.
 	 */
 	public void createPlaylist(String name) {
-		Playlist newPlaylist = new Playlist(name);
-		playlists.add(newPlaylist);
-		JsonHandler.savePlaylistsToJson(playlists, "playlists.json");
+		if(playlists.stream().noneMatch(playlist -> playlist.getName().equals(name))) {
+			Playlist newPlaylist = new Playlist(name);
+			playlists.add(newPlaylist);
+			JsonHandler.savePlaylistsToJson(playlists, "playlists.json");
+		}
 	}
 
 	/**

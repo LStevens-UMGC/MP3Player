@@ -8,10 +8,11 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -34,7 +35,6 @@ class MusicPlayerTest {
 
     @BeforeEach
     void setUp() {
-
         musicPlayer = MusicPlayer.getInstance();
     }
 
@@ -278,7 +278,6 @@ class MusicPlayerTest {
     }
 
     //Test case # MP15
-
     @Test
     void testAddSongToHistory() {
         Song song = new Song("Title", "Artist", "Album", "2023", "/path/to/file.mp3");
@@ -313,6 +312,23 @@ class MusicPlayerTest {
             musicPlayer.handlePlayPause(selectedSong, playPauseButton);
 
             assertNotNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be initialized.");
+        });
+    }
+
+    @Test
+    void testHandlePlayPauseWithNoMediaPlayer() {
+        Platform.runLater(() -> {
+            Song song = new Song("Title", "Artist", "Album", "2023", "/path/to/file.mp3");
+            Button playPauseButton = new Button("Play");
+
+            // Mock MediaPlayer instance
+            MediaPlayer mediaPlayerMock = Mockito.mock(MediaPlayer.class);
+            musicPlayer.setMediaPlayer(mediaPlayerMock);
+
+            musicPlayer.handlePlayPause(song, playPauseButton);
+
+            verify(mediaPlayerMock, times(1)).play();
+            assertEquals("Pause", playPauseButton.getText(), "Expected button text to change to 'Pause'");
         });
     }
 
@@ -359,21 +375,79 @@ class MusicPlayerTest {
 
     }
 
-
-
+    //Test case #MP18
     @Test
-    void testHandlePlayPauseWithNoMediaPlayer() {
-        Song song = new Song("Title", "Artist", "Album", "2023", "/path/to/file.mp3");
-        Button playPauseButton = new Button("Play");
+    void testHandlePlayPauseNullButton(){
+        //Purpose: Check that the method handles a null playPauseButton
+        Platform.runLater(() -> {
+            Label songTitleLabel = new Label();
+            Label totalTimeLabel = new Label();
+            Slider progressBar = new Slider();
 
-        // Mock MediaPlayer instance
-        MediaPlayer mediaPlayerMock = Mockito.mock(MediaPlayer.class);
-        musicPlayer.setMediaPlayer(mediaPlayerMock);
+            musicPlayer.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
+            Song selectedSong = new Song("Test Song", "Test Artist", "Test Album", "2023", "group2/mp3player/AudioTestFiles/1KHz.mp3");
 
-        musicPlayer.handlePlayPause(song, playPauseButton);
-
-        verify(mediaPlayerMock, times(1)).play();
-        assertEquals("Pause", playPauseButton.getText(), "Expected button text to change to 'Pause'");
+            assertNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be null initially.");
+            musicPlayer.handlePlayPause(selectedSong, null);
+            assertNotNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be initialized.");
+            assertEquals("Playing: Test Song", songTitleLabel.getText(), "Expected songTitleLabel to be updated with the song title.");
+        });
     }
+
+    //Test Case #MP19
+    @Test
+    void testHandlePrevNext(){
+        //Purpose: Check that Previous button changes songs correctly when a song is playing
+        Platform.runLater(() -> {
+        Song currentSong = new Song("Test Song", "Test Artist", "Test Album", "2023", "group2/mp3player/AudioTestFiles/1KHz.mp3");
+        Song newSong = new Song("New Test Song", "New Artist", "New Album", "2024", "group2/mp3player/AudioTestFiles/2KHz.mp3");
+
+            MediaPlayer mockMediaPlayer = mock(MediaPlayer.class);
+            musicPlayer.setMediaPlayer(mockMediaPlayer);
+
+            //simulate a song playing
+            musicPlayer.handlePrevNext(currentSong);
+            verify(mockMediaPlayer, times(0)).pause();
+            assertNotNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be initialized.");
+            verify(musicPlayer.getMediaPlayer(), times(1)).play();
+
+            musicPlayer.handlePrevNext(newSong);
+            verify(mockMediaPlayer, times(1)).pause();
+            assertNotNull(musicPlayer.getMediaPlayer(), "Expected new mediaPlayer to be initialized.");
+            verify(musicPlayer.getMediaPlayer(), times(2)).play();
+    });
+    }
+
+    //Test case #MP20
+    @Test
+    void testCreatePlaylist() {
+        //Purpose: Checks that playlists are created correctly
+        musicPlayer.createPlaylist("Rock Classics");
+        musicPlayer.createPlaylist("Pop Hits");
+
+        List<String> playlistNames = musicPlayer.getPlaylists().stream()
+                .map(Playlist::getName)
+                .toList();
+
+        assertEquals(2, playlistNames.size());
+        assertEquals("Rock Classics", playlistNames.get(0));
+        assertEquals("Pop Hits", playlistNames.get(1));
+    }
+
+    //Test case #MP21
+    @Test
+    void testCreateDuplicatePlaylist() {
+        //Purpose: Checks if the createPlaylist method creates duplicate playlists
+        musicPlayer.getPlaylists().clear();
+        musicPlayer.createPlaylist("Rock Classics");
+        musicPlayer.createPlaylist("Rock Classics");
+
+        List<String> playlistNames = musicPlayer.getPlaylists().stream()
+                .map(Playlist::getName)
+                .toList();
+        assertEquals(1, playlistNames.size());
+    }
+
+
 }
 
