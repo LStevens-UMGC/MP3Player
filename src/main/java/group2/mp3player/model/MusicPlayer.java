@@ -318,15 +318,19 @@ public class MusicPlayer {
 //Modified to add new the currently playing song to song history.
 //Commented out code was causing minor visual glitch with song duration label.
 	private void initializeMediaPlayer(Song selectedSong) {
-		Media media = new Media(selectedSong.getFilePath());
-		songHistory.add(selectedSong);
-		mediaPlayer = new MediaPlayer(media);
-		mediaPlayer.setVolume(getSavedVolume());
-		// mediaPlayer.setOnReady(() ->
-		// totalTimeLabel.setText(formatTime(media.getDuration())));
-		mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> progressBar
-				.setValue((newTime.toSeconds() / media.getDuration().toSeconds()) * 100));
-        mediaPlayer.setAutoPlay(true);
+		try {
+			Media media = new Media(selectedSong.getFilePath());
+			songHistory.add(selectedSong);
+			mediaPlayer = new MediaPlayer(media);
+			mediaPlayer.setVolume(getSavedVolume());
+			// mediaPlayer.setOnReady(() ->
+			// totalTimeLabel.setText(formatTime(media.getDuration())));
+			mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> progressBar
+					.setValue((newTime.toSeconds() / media.getDuration().toSeconds()) * 100));
+			mediaPlayer.setAutoPlay(true);
+		}catch(IllegalArgumentException e){
+			throw new RuntimeException("Error initializing media player file: " + selectedSong.getFilePath(), e);
+			}
     }
 
 
@@ -365,11 +369,13 @@ public class MusicPlayer {
 	 * @param name the name of the new playlist to be created.
 	 */
 	public void createPlaylist(String name) {
-		if(playlists.stream().noneMatch(playlist -> playlist.getName().equals(name))) {
+		if(name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("Playlist name cannot be null or empty");
+		}
 			Playlist newPlaylist = new Playlist(name);
 			playlists.add(newPlaylist);
 			JsonHandler.savePlaylistsToJson(playlists, "playlists.json");
-		}
+
 	}
 
 	/**
@@ -380,10 +386,8 @@ public class MusicPlayer {
 	 * @return a list of playlist names that match the search criteria. If the playlistName
 	 *         is null or empty, returns all available playlist names.
 	 */
-	/*
-	 * TODO rename?
-	 */
-	public List<String> searchUpdatePlaylistView(String playlistName) {
+
+	public List<String> searchPlaylistByName(String playlistName) {
 		List<String> playlistNames = new ArrayList<>();
 		if ((playlistName == null) || playlistName.isEmpty()) {
 

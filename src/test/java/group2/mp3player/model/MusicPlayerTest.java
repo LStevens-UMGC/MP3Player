@@ -8,6 +8,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -36,6 +37,11 @@ class MusicPlayerTest {
     @BeforeEach
     void setUp() {
         musicPlayer = MusicPlayer.getInstance();
+    }
+
+    @AfterEach
+    void cleanUp() {
+        musicPlayer.getPlaylists().clear();
     }
 
     //Test case # MP1
@@ -277,27 +283,6 @@ class MusicPlayerTest {
         assertNull(songs, "Expected loadPlaylist to return null for a null playlist name.");
     }
 
-    //Test case # MP15
-    @Test
-    void testAddSongToHistory() {
-        Song song = new Song("Title", "Artist", "Album", "2023", "/path/to/file.mp3");
-        musicPlayer.getSongHistory().add(song);
-
-        ObservableList<Song> songHistory = musicPlayer.getSongHistory();
-        assertTrue(songHistory.contains(song), "Song should be added to song history");
-    }
-
-
-    @Test
-    void testSearchUpdatePlaylistView() {
-        musicPlayer.createPlaylist("Rock Classics");
-        musicPlayer.createPlaylist("Pop Hits");
-
-        List<String> searchResults = musicPlayer.searchUpdatePlaylistView("Rock");
-        assertEquals(1, searchResults.size());
-        assertEquals("Rock Classics", searchResults.get(0));
-    }
-
     //Test Case #MP15
     @Test
     void testHandlePlayPauseWhenMediaPlayerIsNull(){
@@ -445,8 +430,137 @@ class MusicPlayerTest {
         List<String> playlistNames = musicPlayer.getPlaylists().stream()
                 .map(Playlist::getName)
                 .toList();
-        assertEquals(1, playlistNames.size());
+        assertEquals(2, playlistNames.size());
+        assertEquals("Rock Classics", playlistNames.get(0), "Expected the first playlist to be 'Rock Classics'.");
+        assertEquals("Rock Classics", playlistNames.get(1), "Expected the second playlist to be 'Rock Classics'.");
     }
+
+    //Test case #MP22
+    @Test
+    void testCreatePlaylistWithNullName() {
+        assertThrows(IllegalArgumentException.class, () -> musicPlayer.createPlaylist(null));
+    }
+
+    //Test case #MP23
+    @Test
+    void testAddSongToHistory() {
+        //Purpose: Checks that the song is successfully added to song history
+        Song song = new Song("Test Song", "Test Artist", "Test Album", "2023", "group2/mp3player/AudioTestFiles/1KHz.mp3");
+        musicPlayer.getSongHistory().add(song);
+
+        ObservableList<Song> songHistory = musicPlayer.getSongHistory();
+        assertTrue(songHistory.contains(song), "Song should be added to song history");
+    }
+
+    //Test case #MP24
+    @Test
+    void testPlaySongFromHistoryInitializesWhenNull(){
+        //Purpose: Verify that the MediaPlayer initializes when null and plays a song from history
+        Platform.runLater(() -> {
+            Song song = new Song("Test Song", "Test Artist", "Test Album", "2023",
+                    getClass().getResource("/group2/mp3player/AudioTestFiles/1KHz.mp3").toExternalForm());
+           //MediaPlayer is null
+            musicPlayer.setMediaPlayer(null);
+            assertNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be null initially.");
+
+            musicPlayer.playSongFromHistory(song);
+            assertNotNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be initialized.");
+            verify(musicPlayer.getMediaPlayer(), times(1)).play();
+        });
+    }
+
+    //Test Case #MP25
+    @Test
+    void testPlaySongFromHistoryInvalidSong(){
+        //Purpose: playSongFromHistory throws an exception when playing a song with an invalid file path
+        Platform.runLater(() -> {
+            Song invalidSong = new Song("Invalid Title","Invalid Artist","Invalid Album","Invalid Year","invalid/path/to/nonexistent-file.mp3");
+            musicPlayer.setMediaPlayer(null);
+            assertNull(musicPlayer.getMediaPlayer(), "Expected mediaPlayer to be null initially.");
+
+            RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+                musicPlayer.playSongFromHistory(invalidSong);
+            });
+
+            String expectedMessage = "Error initializing media player file: invalid/path/to/nonexistent-file.mp3";
+            assertTrue(exception.getMessage().contains(expectedMessage),
+                    "Expected exception message to contain: " + expectedMessage + ", but got: " + exception.getMessage());
+
+        });
+    }
+
+    //Test Case #MP26
+    @Test
+    void testPlaySongFromHistoryWithCorruptedSong(){
+       //Purpose: Verify that playSongFromHistory handles errors when the file is corrupted
+        Platform.runLater(() -> {
+            Song corruptedSong = new Song("Corrupted Song","Test Artist","Test Album","2023","group2/mp3player/AudioTestFiles/corrupted.mp3");
+
+            Exception exception = assertThrows(RuntimeException.class, () -> {
+                musicPlayer.playSongFromHistory(corruptedSong);
+            });
+
+            String expectedMessage = "Error initializing media player file: group2/mp3player/AudioTestFiles/corrupted.mp3";
+            assertTrue(exception.getMessage().contains(expectedMessage),
+                    expectedMessage + ", but got: " + exception.getMessage());
+        });
+    }
+
+    //Test case #MP27
+    @Test
+    void testSearchUpdatePlaylistView() {
+        //Purpose: Verify that playlists are searched correctly based on search terms
+        musicPlayer.createPlaylist("Rock Classics");
+        musicPlayer.createPlaylist("Pop Hits");
+
+        List<String> searchResults = musicPlayer.searchPlaylistByName("Rock");
+        assertEquals(1, searchResults.size());
+        assertEquals("Rock Classics", searchResults.get(0));
+    }
+
+    //Test Case #MP28
+    @Test
+    public void testSearchPlaylistsByNameEmptyQuery() throws Exception {
+        //Purpose: Verify that all playlists are returned when the search query is empty
+        musicPlayer.createPlaylist("Rock Classics");
+        musicPlayer.createPlaylist("Pop Hits");
+        musicPlayer.createPlaylist("Country Hits");
+
+        List<String> searchResults = musicPlayer.searchPlaylistByName("");
+
+        assertEquals(3, searchResults.size());
+        assertEquals(List.of("Rock Classics", "Pop Hits", "Country Hits"), searchResults);
+    }
+
+    //Test Case #MP29
+    @Test
+    void testSearchPlaylistsByNameDuplicateNames() {
+        //Purpose: Checks that duplicate playlist are retuned when searched
+        musicPlayer.getPlaylists().clear();
+        musicPlayer.createPlaylist("Rock Classics");
+        musicPlayer.createPlaylist("Rock Classics");
+        musicPlayer.createPlaylist("Pop Hits");
+
+        List<String> searchResults = musicPlayer.searchPlaylistByName("Rock");
+
+        assertEquals(2, searchResults.size());
+        musicPlayer.getPlaylists().clear();
+    }
+
+    //Test Case #MP30
+    @Test
+    void testSearchPlaylistsByNameWhenCaseSensitive() {
+        //Purpose: Checks that playlists are returned if they are case sensitive
+        musicPlayer.createPlaylist("Rock Classics");
+        musicPlayer.createPlaylist("Pop Hits");
+
+        List<String> searchResults = musicPlayer.searchPlaylistByName("rock");
+
+        assertEquals(1, searchResults.size());
+        assertEquals("Rock Classics", searchResults.get(0));
+    }
+
+
 
 
 }

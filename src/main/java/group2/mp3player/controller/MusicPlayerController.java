@@ -223,7 +223,7 @@ public class MusicPlayerController {
 
 
         searchPlaylistField.textProperty().addListener((obs, oldVal, newVal) -> {
-            searchUpdatePlaylistView(newVal);
+            searchPlaylistByName(newVal);
         });
 
         searchSongsField.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -713,7 +713,7 @@ public class MusicPlayerController {
      * @param playlistName the name or partial name of the playlist(s) to search for.
      *                     If null or empty, all playlists will be displayed.
      */
-    private void searchUpdatePlaylistView(String playlistName) {
+    private void searchPlaylistByName(String playlistName) {
 //		List<String> playlistNames = new ArrayList<>();
 //		if(playlistName == null || playlistName.isEmpty()) {
 //
@@ -727,7 +727,7 @@ public class MusicPlayerController {
 //				}
 //			}
 //		}
-        playlistListView.setItems(FXCollections.observableArrayList(model.searchUpdatePlaylistView(playlistName)));
+        playlistListView.setItems(FXCollections.observableArrayList(model.searchPlaylistByName(playlistName)));
     }
 
     /**
