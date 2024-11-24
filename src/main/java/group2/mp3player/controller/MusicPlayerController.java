@@ -33,6 +33,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -147,6 +149,8 @@ public class MusicPlayerController {
         preferences = Preferences.userNodeForPackage(MusicPlayerController.class);
         // Set up the columns to display song details
         songTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        VBox.setVgrow(songTableView, Priority.ALWAYS);
+        VBox.setVgrow(progressBar, Priority.ALWAYS);
         songNameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist"));
         albumColumn.setCellValueFactory(new PropertyValueFactory<>("album"));
