@@ -44,6 +44,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.prefs.Preferences;
+
 
 /**
  * The `MusicPlayerController` class is responsible for handling user interactions
@@ -56,6 +58,8 @@ public class MusicPlayerController {
     private static final String SONG_HISTORY_FILE = "songHistory.json";
     private Equalizer savedEqualizer;
     private String currentPlaylist;
+    private static final String VOLUME_KEY = "volume";
+    private Preferences preferences;
 
     @FXML
     private ListView<String> playlistListView;
@@ -118,6 +122,9 @@ public class MusicPlayerController {
     @FXML
     private Slider volumeSlider;
 
+    @FXML
+    private Label volumePercentageLabel;
+
     /**
      * Initializes the MusicPlayerController, setting up various UI components and event handlers.
      * <p>
@@ -137,6 +144,7 @@ public class MusicPlayerController {
      */
     @FXML
     public void initialize() {
+        preferences = Preferences.userNodeForPackage(MusicPlayerController.class);
         // Set up the columns to display song details
         songTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         songNameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -146,6 +154,7 @@ public class MusicPlayerController {
         // Changes to retrive all songs list.
         songTableView.setItems(model.getAllSongs());
         currentPlaylist = "AllSongs";
+
 
 		// Initialize model
 		model.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
@@ -229,6 +238,10 @@ public class MusicPlayerController {
             songTableView.setItems(FXCollections.observableArrayList(result));
         });
 
+        double savedVolume = getSavedVolume();
+        volumeSlider.setValue(savedVolume);
+        updateVolumePercentageLabel(savedVolume);
+
         setupProgressBarSeekHandler();
         setupVolumeBarHandler();
         setupAutoPlayHandler();
@@ -242,6 +255,15 @@ public class MusicPlayerController {
         Image nextIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/next.png")));
         ((ImageView) nextButton.getGraphic()).setImage(nextIcon);
 
+    }
+
+    /**
+     * Gets saved volume data. Used to ensure music player volume initialized properly
+     * @return saved value for volume
+     */
+    private double getSavedVolume() {
+        Preferences preferences = Preferences.userNodeForPackage(MusicPlayerController.class);
+        return preferences.getDouble("volume", 100.0); // Default to 100% if no value is saved
     }
 
     /*
@@ -647,7 +669,13 @@ public class MusicPlayerController {
             if (model.getMediaPlayer() != null) {
                 model.setVolume(newVal.doubleValue() / 100);
             }
+            updateVolumePercentageLabel(newVal.doubleValue());
+            preferences.putDouble(VOLUME_KEY, newVal.doubleValue());
         });
+    }
+
+    private void updateVolumePercentageLabel(double volume) {
+        volumePercentageLabel.setText(String.format("%.0f%%", volume));
     }
 
     private void setupProgressBarSeekHandler() {

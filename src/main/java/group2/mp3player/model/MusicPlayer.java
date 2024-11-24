@@ -63,7 +63,7 @@ public class MusicPlayer {
 		allSongs.addAll(Objects.requireNonNull(JsonHandler.loadFromJson(ALL_SONGS_FILE)));
 
 		if (mediaPlayer != null) {
-			mediaPlayer.setVolume(loadVolumePreference());
+			mediaPlayer.setVolume(getSavedVolume());
 		}
 	}
 
@@ -142,6 +142,12 @@ public class MusicPlayer {
 		return ALL_SONGS_FILE;
 	}
 
+	private double getSavedVolume() {
+		Preferences preferences = Preferences.userNodeForPackage(MusicPlayer.class);
+		return preferences.getDouble("volume", 100.0); // Default to 100% if no value is saved
+	}
+
+
 	/**
 	 * Sets the labels and progress bar for the music player interface.
 	 *
@@ -171,8 +177,10 @@ public class MusicPlayer {
 	 * @param volume the desired volume level as a double, where 0.0 represents mute and 1.0 represents the maximum volume.
 	 */
 	public void setVolume(double volume){
-		mediaPlayer.setVolume(volume);
-		saveVolumePreference(volume);
+		if(mediaPlayer != null) {
+			mediaPlayer.setVolume(volume);
+			saveVolumePreference(volume);
+		}
 	}
 
 	public boolean getRandomStatus(){
@@ -316,6 +324,7 @@ public class MusicPlayer {
 		Media media = new Media(selectedSong.getFilePath());
 		songHistory.add(selectedSong);
 		mediaPlayer = new MediaPlayer(media);
+		mediaPlayer.setVolume(getSavedVolume());
 		// mediaPlayer.setOnReady(() ->
 		// totalTimeLabel.setText(formatTime(media.getDuration())));
 		mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> progressBar

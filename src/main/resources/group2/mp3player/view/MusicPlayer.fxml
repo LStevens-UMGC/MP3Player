@@ -115,6 +115,7 @@
                 <!-- Volume Control -->
                 <Slider fx:id="volumeSlider"/>
                 <Label text="Volume"/>
+                <Label fx:id="volumePercentageLabel" text="100%"/>
             </HBox>
         </VBox>
     </HBox>
