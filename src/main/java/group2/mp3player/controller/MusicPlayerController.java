@@ -55,6 +55,7 @@ public class MusicPlayerController {
     private static final String ALL_SONGS_FILE = "allSongs.json";
     private static final String SONG_HISTORY_FILE = "songHistory.json";
     private Equalizer savedEqualizer;
+    private String currentPlaylist;
 
     @FXML
     private ListView<String> playlistListView;
@@ -144,6 +145,7 @@ public class MusicPlayerController {
         yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
         // Changes to retrive all songs list.
         songTableView.setItems(model.getAllSongs());
+        currentPlaylist = "AllSongs";
 
 		// Initialize model
 		model.setLabelsAndProgressBar(songTitleLabel, totalTimeLabel, progressBar);
@@ -198,6 +200,7 @@ public class MusicPlayerController {
         playlistListView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 String selectedPlaylistName = playlistListView.getSelectionModel().getSelectedItem();
+                currentPlaylist = selectedPlaylistName;
                 playlistLabel.setText("Viewing : " + selectedPlaylistName);
                 if (selectedPlaylistName != null) {
                     loadPlaylist(selectedPlaylistName);
@@ -284,9 +287,6 @@ public class MusicPlayerController {
 		} else {
 			System.out.println("No song or playlist selected.");
 		}
-		if (selectedPlaylistName != null) {
-			loadPlaylist(selectedPlaylistName);
-		}
 	}
 
 	/**
@@ -295,23 +295,27 @@ public class MusicPlayerController {
 	 */
 	private void handleRemoveSongFromPlaylist() {
 		Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
-		String selectedPlaylistName = playlistListView.getSelectionModel().getSelectedItem();
+		String selectedPlaylistName = currentPlaylist;//playlistListView.getSelectionModel().getSelectedItem();
 		if ((selectedSong != null) && (selectedPlaylistName != null)) {
-			Playlist selectedPlaylist = model.getPlaylists().stream()
-					.filter(playlist -> playlist.getName().equals(selectedPlaylistName)).findFirst().orElse(null);
-			if (selectedPlaylist != null) {
-				selectedPlaylist.removeSpecifiedSong(selectedSong);
+            if(selectedPlaylistName == "AllSongs"){
+                removeSongFromAll(selectedSong);
+                viewAllSongs();
+            }
+            else{
+                Playlist selectedPlaylist = model.getPlaylists().stream()
+                        .filter(playlist -> playlist.getName().equals(selectedPlaylistName)).findFirst().orElse(null);
+                if (selectedPlaylist != null) {
+                    selectedPlaylist.removeSpecifiedSong(selectedSong);
 
-				JsonHandler.savePlaylistsToJson(model.getPlaylists(), "playlists.json");
-				System.out.println("Song removed from playlist and saved to JSON.");
-			} else {
-				System.out.println("Selected playlist not found.");
-			}
+                    JsonHandler.savePlaylistsToJson(model.getPlaylists(), "playlists.json");
+                    System.out.println("Song removed from playlist and saved to JSON.");
+                    loadPlaylist(selectedPlaylistName);
+                } else {
+                    System.out.println("Selected playlist not found.");
+                }
+            }
 		} else {
 			System.out.println("No song or playlist selected.");
-		}
-		if (selectedPlaylistName != null) {
-			loadPlaylist(selectedPlaylistName);
 		}
 	}
 
@@ -411,6 +415,11 @@ public class MusicPlayerController {
         JsonHandler.saveToJson(model.getAllSongs(), model.getAllSongsFile());
     }
 
+    private void removeSongFromAll(Song song) {
+        model.getAllSongs().remove(song);
+        JsonHandler.saveToJson(model.getAllSongs(), model.getAllSongsFile());
+    }
+
     /**
      * Switches the song view to display the entire list of songs.
      * <p>
@@ -420,6 +429,8 @@ public class MusicPlayerController {
      */
     @FXML
     private void viewAllSongs() {
+        currentPlaylist = "AllSongs";
+        playlistLabel.setText("");
         playlistLabel.setText("Viewing : All Songs");
         songTableView.setItems(model.getAllSongs());
 
