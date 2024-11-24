@@ -115,14 +115,16 @@
                 <Button fx:id="randomizeButton" onAction="#toggleRandomize">
                 <graphic>
                     <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
-                        <Image url="@icons/next.png"/>
+                        <Image url="@icons/repeat.png"/>
                     </ImageView>
                 </graphic>
                 </Button>
 
                 <!-- Volume Control -->
                 <Slider fx:id="volumeSlider"/>
-                <Label text="Volume"/>
+                <ImageView fx:id="speakerIcon" fitWidth="25" fitHeight="25" preserveRatio="true">
+                    <Image url="@icons/speaker.png"/>
+                </ImageView>
                 <Label fx:id="volumePercentageLabel" text="100%"/>
             </HBox>
             </VBox>

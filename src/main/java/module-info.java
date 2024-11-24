@@ -6,13 +6,10 @@ module group2.mp3player {
 
 	requires org.controlsfx.controls;
 	requires net.synedra.validatorfx;
-	requires org.kordamp.ikonli.javafx;
-	requires org.kordamp.bootstrapfx.core;
 	requires com.google.gson;
 	requires jaudiotagger;
 	requires java.desktop;
 	requires java.prefs;
-//    requires eu.hansolo.tilesfx;
 
 	opens group2.mp3player.controller to javafx.fxml;
 

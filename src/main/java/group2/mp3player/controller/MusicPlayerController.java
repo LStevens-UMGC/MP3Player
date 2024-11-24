@@ -8,13 +8,11 @@ import group2.mp3player.utils.JsonHandler;
 import group2.mp3player.utils.MetaDataExtractor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -35,7 +33,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -124,6 +121,9 @@ public class MusicPlayerController {
     private TextField searchSongsField;
 
     @FXML
+    private ImageView speakerIcon;
+
+    @FXML
     private Slider volumeSlider;
 
     @FXML
@@ -179,7 +179,7 @@ public class MusicPlayerController {
 					songTitleLabel.setText("Viewing : " + selectedSong.getTitle());
 					model.playSongFromHistory(selectedSong);
                     loadEqualzierWithoutDisplay();
-                    Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause.png")));
+                    Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause2.png")));
                     ((ImageView) playPauseButton.getGraphic()).setImage(pauseIcon);
 					setupCurrentTimeHandler();
 					setupAutoPlayHandler();
@@ -254,15 +254,20 @@ public class MusicPlayerController {
         setupVolumeBarHandler();
         setupAutoPlayHandler();
 
-        Image prevIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/previous.png")));
+        Image prevIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/previous2.png")));
         ((ImageView) prevButton.getGraphic()).setImage(prevIcon);
 
-        Image playIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/play.png")));
+        Image playIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/play2.png")));
         ((ImageView) playPauseButton.getGraphic()).setImage(playIcon);
 
-        Image nextIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/next.png")));
+        Image nextIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/next2.png")));
         ((ImageView) nextButton.getGraphic()).setImage(nextIcon);
 
+        Image randomIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/repeat.png")));
+        ((ImageView) randomizeButton.getGraphic()).setImage(randomIcon);
+
+        Image speakerImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/speaker.png")));
+        speakerIcon.setImage(speakerImage);
     }
 
     /**
@@ -901,6 +906,15 @@ public class MusicPlayerController {
 
     public void toggleRandomize() {
         model.toggleRandomize();
+        if(model.getRandomStatus() == false){
+            Image shuffleIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/repeat.png")));
+            ((ImageView) randomizeButton.getGraphic()).setImage(shuffleIcon);
+        }
+        else{
+            Image shuffleIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/shuffle.png")));
+            ((ImageView) randomizeButton.getGraphic()).setImage(shuffleIcon);
+
+        }
     }
 
 

@@ -6,7 +6,6 @@ import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.Tag;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.File;
 
@@ -33,10 +32,6 @@ class MetaDataExtractorTest {
         //Tag tag = (Tag)Mockito.mock(Tag.class);
         Tag tag = audioFile.getTag();
         // Set up expected metadata
-        //when(tag.getFirst(FieldKey.TITLE)).thenReturn("Test Title");
-        //when(tag.getFirst(FieldKey.ARTIST)).thenReturn("Test Artist");
-        //when(tag.getFirst(FieldKey.ALBUM)).thenReturn("Test Album");
-        //when(tag.getFirst(FieldKey.YEAR)).thenReturn("2024");
         String title = tag != null ? tag.getFirst(FieldKey.TITLE) : "Unknown";
         String artist = tag != null ? tag.getFirst(FieldKey.ARTIST) : "Unknown";
         String album = tag != null ? tag.getFirst(FieldKey.ALBUM) : "Unknown";
@@ -44,15 +39,6 @@ class MetaDataExtractorTest {
 
 
         Song song = new Song(title, artist, album, year, testFile.toURI().toString());
-
-
-        //when(audioFile.getTag()).thenReturn(tag);
-
-        // Mock AudioFileIO to return our mock AudioFile
-        //Mockito.mockStatic(AudioFileIO.class).when(() -> AudioFileIO.read(testFile)).thenReturn(audioFile);
-
-        // Run the method under test
-        //Song result = MetaDataExtractor.extractMetadata(testFile);
 
         // Assertions
         assertNotNull(song);
@@ -77,13 +63,8 @@ class MetaDataExtractorTest {
         //AudioFile mockAudioFile = (AudioFile)Mockito.mock(AudioFile.class);
         AudioFile audioFile = AudioFileIO.read(testFile);
 
-        //Tag tag = (Tag)Mockito.mock(Tag.class);
         Tag tag = audioFile.getTag();
         // Set up expected metadata
-        //when(tag.getFirst(FieldKey.TITLE)).thenReturn("Test Title");
-        //when(tag.getFirst(FieldKey.ARTIST)).thenReturn("Test Artist");
-        //when(tag.getFirst(FieldKey.ALBUM)).thenReturn("Test Album");
-        //when(tag.getFirst(FieldKey.YEAR)).thenReturn("2024");
         String title = tag != null ? tag.getFirst(FieldKey.TITLE) : "Unknown";
         String artist = tag != null ? tag.getFirst(FieldKey.ARTIST) : "Unknown";
         String album = tag != null ? tag.getFirst(FieldKey.ALBUM) : "Unknown";
@@ -107,8 +88,6 @@ class MetaDataExtractorTest {
         File testFile = new File("test.mp3");
 
         // Simulate an IOException when reading the file
-        //Mockito.mockStatic(AudioFileIO.class).when(() -> AudioFileIO.read(mockFile)).thenThrow(new RuntimeException("File read error"));
-
         try{
             AudioFileIO.read(testFile);
         }catch(Exception e){

@@ -17,10 +17,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import java.util.prefs.Preferences;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 /**
  * The `MusicPlayer` class provides functionalities to play, pause,
  * and manage songs and playlists. It also keeps track of the song
