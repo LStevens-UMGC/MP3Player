@@ -1,124 +1,73 @@
 /* General styling */
 .root {
-    -fx-background-color: linear-gradient(to bottom, rgba(23, 152, 125, 0.67), #2c3e50); /* Gradient background */
     -fx-padding: 1px 1px 20px 1px;
     -fx-font-family: 'Segoe UI', sans-serif;
     -fx-font-size: 12px;
-    -fx-text-fill: black;
 }
 
 /* Menu bar */
 .menu-bar {
     -fx-background-color: transparent;
-    -fx-text-fill: white;
 }
 
 .menu-bar .menu {
-    -fx-text-fill: white;
 }
 
 .menu-bar .menu:hover {
-    -fx-background-color: #3b5568;
 }
 
 /* Text fields (e.g., search bar) */
 .text-field {
-    -fx-background-color: #ecf0f1;
     -fx-background-radius: 10px;
     -fx-padding: 5px;
     -fx-border-radius: 10px;
-    -fx-border-color: #bdc3c7;
-    -fx-text-fill: #2c3e50;
-    -fx-font-size: 12px;
+    -fx-border-width: 1px;
 }
 
 /* General ListView Styling */
 .list-view {
-    -fx-background-color: transparent; /* Remove default background */
-    -fx-border-color: transparent; /* Remove border */
-    -fx-padding: 0px 5px 0px 0px; /* Add padding around the ListView */
+    -fx-padding: 0px 5px 0px 0px;
 }
 
-/* Styling List Cells */
 .list-view .list-cell {
-    -fx-text-fill: #2c3e50; /* Dark text color */
-    -fx-font-size: 14px; /* Adjust font size */
-    -fx-padding: 5px 10px; /* Add padding inside each cell */
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px;
 }
 
-/* Hover Effect for List Cells */
-.list-view .list-cell:hover {
-    -fx-background-color: #ecf0f1; /* Light gray background on hover */
-}
-
-/* Selected List Cell */
 .list-view .list-cell:selected {
-    -fx-background-color: #16a085; /* Teal background for selected item */
-    -fx-text-fill: white; /* White text for selected item */
-    -fx-font-weight: bold; /* Bold text for the selected item */
+    -fx-font-weight: bold;
 }
 
 /* Focus Styling (optional) */
 .list-view:focused .list-cell {
-    -fx-background-color: #e0f7fa; /* Soft background when focused */
 }
 
 /* General TableView Styling */
 .table-view {
-    -fx-background-color: transparent; /* Remove default background */
-    -fx-border-color: transparent; /* Remove border */
-    -fx-padding: 0; /* Remove padding */
+    -fx-padding: 0;
 }
 
-/* Column Headers */
 .table-view .column-header {
-    -fx-background-color: #2c3e50; /* Teal background for headers */
-    -fx-text-fill: white; /* White text color */
-    -fx-font-weight: bold; /* Bold text */
-    -fx-alignment: center; /* Center text in headers */
-    -fx-border-color: #16a085; /* Add border to header */
-    -fx-border-width: 0 0 2px 0; /* Only bottom border */
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-border-width: 0 0 2px 0;
 }
 
-/* Center Align Column Content */
 .table-view .cell {
-    -fx-alignment: center; /* Center content horizontally and vertically */
-    -fx-text-fill: #2c3e50; /* Dark text color */
-    -fx-font-size: 12px; /* Adjust font size */
-    -fx-border-color: transparent; /* Remove cell borders */
+    -fx-alignment: center;
+    -fx-font-size: 12px;
+    -fx-border-width: 0;
 }
 
-/* Hover Effect for Rows */
-.table-view .cell:hover {
-    -fx-background-color: #ecf0f1; /* Light gray hover effect */
-}
-
-/* Alternate Row Colors */
 .table-view .row-cell:odd {
-    -fx-background-color: #f9f9f9; /* Light background for odd rows */
 }
 
 .table-view .row-cell:even {
-    -fx-background-color: #ffffff; /* White background for even rows */
 }
-
-/* Selected Row */
-.table-view .row-cell:selected {
-    -fx-background-color: #16a085; /* Teal background for selected row */
-    -fx-text-fill: white; /* White text for selected row */
-}
-
-/* Remove Grid Lines */
-.table-view .column-header-background {
-    -fx-background-color: transparent; /* Remove grid background */
-}
-
 
 /* Buttons */
 .button {
-    -fx-background-color: #1abc9c; /* Teal color for buttons */
-    -fx-background-radius: 20px; /* Rounded corners */
-    -fx-text-fill: white;
+    -fx-background-radius: 20px;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
     -fx-cursor: hand;
@@ -127,54 +76,34 @@
 }
 
 .button:hover {
-    -fx-background-color: #16a085; /* Darker teal on hover */
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 5);
 }
 
-/* Progress bar */
+/* Slider */
 .slider {
     -fx-padding: 5px;
-    -fx-background-color: #bdc3c7;
-    -fx-background-radius: 10px;
-    -fx-accent: #1abc9c; /* Teal for the progress indicator */
-}
-
-/* Volume slider */
-.slider .track {
-    -fx-background-color: #bdc3c7;
     -fx-background-radius: 10px;
 }
 
 .slider .thumb {
-    -fx-background-color: #1abc9c; /* Teal for slider thumb */
-    -fx-background-radius: 50%; /* Circular thumb */
+    -fx-background-radius: 50%;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0, 0, 2);
 }
 
 /* Labels (e.g., song title, time) */
 .label {
-    -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-font-size: 12px;
 }
 
-/* Modern styling for the equalizer */
+/* Dialog pane */
 .dialog-pane {
-    -fx-background-color: #34495e;
-    -fx-border-color: #2c3e50;
     -fx-border-radius: 10px;
     -fx-border-width: 2px;
 }
 
 .dialog-pane .button {
-    -fx-background-color: #1abc9c;
-    -fx-text-fill: white;
     -fx-font-weight: bold;
-}
-
-/* Add a hover effect for equalizer controls */
-.dialog-pane .button:hover {
-    -fx-background-color: #16a085;
 }
 
 /* Custom cursor styling */
@@ -182,11 +111,7 @@
     -fx-cursor: hand;
 }
 
-.dark-text {
-    -fx-text-fill: #2c3e50;
-}
-
+/* Equalizer background */
 .equalizer-bg {
-    -fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e); /* Match the Music Player background */
-    -fx-padding: 20px; /* Add consistent padding */
+    -fx-padding: 20px;
 }

@@ -6,6 +6,7 @@ import group2.mp3player.model.Playlist;
 import group2.mp3player.model.Song;
 import group2.mp3player.utils.JsonHandler;
 import group2.mp3player.utils.MetaDataExtractor;
+import group2.mp3player.utils.StyleLoader;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -36,6 +37,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.Node;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -903,5 +905,32 @@ public class MusicPlayerController {
         model.toggleRandomize();
     }
 
+    /**
+     * Switches to the Blue theme by replacing the current theme stylesheet.
+     */
+    public void switchToBlueTheme(ActionEvent event) {
+        // Get the Scene from the source Node (e.g., Button triggering the event)
+        Node sourceNode = (Node) event.getSource();
+        Scene scene = sourceNode.getScene();
+
+        StyleLoader.loadStyles(scene,
+                "/styles.css",
+                "/themes/Blue.css"
+        );
+    }
+
+    /**
+     * Switches to the Plain theme by replacing the current theme stylesheet.
+     */
+    public void switchToPlainTheme(ActionEvent event) {
+        // Get the Scene from the source Node (e.g., Button triggering the event)
+        Node sourceNode = (Node) event.getSource();
+        Scene scene = sourceNode.getScene();
+
+        StyleLoader.loadStyles(scene,
+                "/styles.css",
+                "/themes/Blue.css"
+        );
+    }
 
 }

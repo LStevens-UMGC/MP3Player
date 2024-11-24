@@ -42,6 +42,13 @@
             <SeparatorMenuItem />
             <MenuItem text="All Songs" onAction="#viewAllSongs" style="-fx-text-fill: #2c3e50;"/>
             <MenuItem text="Song History" onAction="#handleShowSongHistory" style="-fx-text-fill: #2c3e50;"/>
+
+            <SeparatorMenuItem />
+            <!-- Submenu -->
+            <Menu text="Themes" style="-fx-text-fill: #2c3e50;">
+                <MenuItem text="Plain" onAction="#switchToPlainTheme" style="-fx-text-fill: #34495e;"/>
+                <MenuItem text="Blue" onAction="#switchToBlueTheme" style="-fx-text-fill: #ecf0f1;"/>
+            </Menu>
         </Menu>
         <Menu text="Settings">
             <MenuItem text="Reset Equalizer" onAction="#resetEqualizerSettings" style="-fx-text-fill: #2c3e50;"/>

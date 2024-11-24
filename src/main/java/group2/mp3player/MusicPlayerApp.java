@@ -19,6 +19,7 @@ public class MusicPlayerApp extends Application {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/group2/mp3player/view/MusicPlayer.fxml"));
 		Scene scene = new Scene(loader.load());
 		scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
+		scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/themes/Blue.css")).toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("MP3 Player");
 		primaryStage.show();
