@@ -43,6 +43,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,6 +62,7 @@ public class MusicPlayerController {
     private Equalizer savedEqualizer;
     private String currentPlaylist;
     private static final String VOLUME_KEY = "volume";
+    private static final String EQUALIZER_GAINS_KEY = "equalizerGains";
     private Preferences preferences;
 
     @FXML
@@ -644,9 +646,11 @@ public class MusicPlayerController {
             equalizerController.setMediaPlayer(model.getMediaPlayer());
 
             // Restore saved equalizer settings if available
-            if (savedEqualizer != null) {
-                equalizerController.getEqualizerModel().setGainValues(savedEqualizer.getGainValues());
+            double[] savedGainValues = loadEqualizerSettings();
+            if (savedGainValues != null) {
+                equalizerController.getEqualizerModel().setGainValues(savedGainValues);
             }
+
 
             Stage equalizerStage = new Stage();
             equalizerStage.setTitle("Equalizer");
@@ -655,6 +659,7 @@ public class MusicPlayerController {
             // Save equalizer settings on close
             equalizerStage.setOnCloseRequest(event -> {
                 savedEqualizer = equalizerController.getEqualizerModel();
+                saveEqualizerSettings(savedEqualizer.getGainValues());
             });
 
             equalizerStage.show();
@@ -673,13 +678,44 @@ public class MusicPlayerController {
             equalizerController.setMediaPlayer(model.getMediaPlayer());
 
             // Restore saved equalizer settings if available
-            if (savedEqualizer != null) {
-                equalizerController.getEqualizerModel().setGainValues(savedEqualizer.getGainValues());
+            double[] savedGainValues = loadEqualizerSettings();
+            if (savedGainValues != null) {
+                equalizerController.getEqualizerModel().setGainValues(savedGainValues);
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error opening the equalizer.");
         }
+    }
+
+    // Save settings to Preferences
+    private void saveEqualizerSettings(double[] gainValues) {
+        Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+        prefs.put("equalizerGains", Arrays.toString(gainValues)); // Save as a comma-separated string
+    }
+
+    private void resetEqualizerSettings() {
+        double[] gainValues = new double[10];
+        Arrays.fill(gainValues, 0.0);
+        saveEqualizerSettings(gainValues);
+    }
+
+    // Load settings from Preferences
+    private double[] loadEqualizerSettings() {
+        Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+        String gainsString = prefs.get("equalizerGains", null); // Retrieve the stored string
+        if (gainsString != null) {
+            try {
+                String[] gainStrings = gainsString.replaceAll("[\\[\\]\\s]", "").split(",");
+                return Arrays.stream(gainStrings)
+                        .mapToDouble(Double::parseDouble)
+                        .toArray(); // Convert to double array
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error parsing saved equalizer gains.");
+            }
+        }
+        return null; // No saved settings found
     }
 
     /**
