@@ -176,6 +176,7 @@ public class MusicPlayerController {
 					playlistLabel.setText("");
 					songTitleLabel.setText("Viewing : " + selectedSong.getTitle());
 					model.playSongFromHistory(selectedSong);
+                    loadEqualzierWithoutDisplay();
                     Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause.png")));
                     ((ImageView) playPauseButton.getGraphic()).setImage(pauseIcon);
 					setupCurrentTimeHandler();
@@ -245,6 +246,7 @@ public class MusicPlayerController {
         double savedVolume = getSavedVolume();
         volumeSlider.setValue(savedVolume);
         updateVolumePercentageLabel(savedVolume);
+        loadEqualzierWithoutDisplay();
 
         setupProgressBarSeekHandler();
         setupVolumeBarHandler();
@@ -510,6 +512,7 @@ public class MusicPlayerController {
         playlistLabel.setText(""); // Setting song title display
         songTitleLabel.setText("Viewing : " + nextSong.getTitle()); //setting song title display
         model.handlePrevNext(nextSong);
+        loadEqualzierWithoutDisplay();
         resetSetup();
     }
 
@@ -539,6 +542,7 @@ public class MusicPlayerController {
         playlistLabel.setText(""); // Setting song title display
         songTitleLabel.setText("Viewing : " + prevSong.getTitle()); //setting song title display
         model.handlePrevNext(prevSong);
+        loadEqualzierWithoutDisplay();
         resetSetup();
     }
 
@@ -654,6 +658,24 @@ public class MusicPlayerController {
             });
 
             equalizerStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error opening the equalizer.");
+        }
+    }
+
+    private void loadEqualzierWithoutDisplay(){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/group2/mp3player/view/Equalizer.fxml"));
+            Parent root = loader.load();
+
+            EqualizerController equalizerController = loader.getController();
+            equalizerController.setMediaPlayer(model.getMediaPlayer());
+
+            // Restore saved equalizer settings if available
+            if (savedEqualizer != null) {
+                equalizerController.getEqualizerModel().setGainValues(savedEqualizer.getGainValues());
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error opening the equalizer.");
