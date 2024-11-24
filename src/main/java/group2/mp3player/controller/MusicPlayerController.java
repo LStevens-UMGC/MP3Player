@@ -694,10 +694,11 @@ public class MusicPlayerController {
         prefs.put("equalizerGains", Arrays.toString(gainValues)); // Save as a comma-separated string
     }
 
-    private void resetEqualizerSettings() {
+    public void resetEqualizerSettings() {
         double[] gainValues = new double[10];
         Arrays.fill(gainValues, 0.0);
         saveEqualizerSettings(gainValues);
+        loadEqualzierWithoutDisplay();
     }
 
     // Load settings from Preferences

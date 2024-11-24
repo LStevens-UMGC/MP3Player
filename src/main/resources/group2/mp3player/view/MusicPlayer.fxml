@@ -43,6 +43,9 @@
             <MenuItem text="All Songs" onAction="#viewAllSongs" style="-fx-text-fill: #2c3e50;"/>
             <MenuItem text="Song History" onAction="#handleShowSongHistory" style="-fx-text-fill: #2c3e50;"/>
         </Menu>
+        <Menu text="Settings">
+            <MenuItem text="Reset Equalizer" onAction="#resetEqualizerSettings" style="-fx-text-fill: #2c3e50;"/>
+        </Menu>
     </MenuBar>
     </top>
     <!-- Main content layout -->
