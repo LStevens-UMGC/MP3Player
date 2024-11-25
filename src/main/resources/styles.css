@@ -17,6 +17,18 @@
     -fx-text-fill: white;
 }
 
+.menu-item{
+    -fx-text-fill: white;
+}
+
+.menu{
+    -fx-text-fill: white;
+}
+
+.menu .label{
+    -fx-text-fill: white;
+}
+
 .menu-bar .menu:hover {
     -fx-background-color: #3b5568;
 }
@@ -68,6 +80,7 @@
     -fx-background-color: transparent; /* Remove default background */
     -fx-border-color: transparent; /* Remove border */
     -fx-padding: 0; /* Remove padding */
+    -fx-text-fill: white;
 }
 
 /* Column Headers */
@@ -78,6 +91,10 @@
     -fx-alignment: center; /* Center text in headers */
     -fx-border-color: #16a085; /* Add border to header */
     -fx-border-width: 0 0 2px 0; /* Only bottom border */
+}
+
+.table-view .column-header-background .label{
+    -fx-text-fill: white;
 }
 
 /* Center Align Column Content */
@@ -152,12 +169,26 @@
 }
 
 /* Labels (e.g., song title, time) */
-.label {
+/*.label {*/
+/*    -fx-text-fill: white;*/
+/*    !*-fx-background-color: black;*!*/
+/*    -fx-font-weight: bold;*/
+/*    -fx-font-size: 12px;*/
+/*}*/
+/* Submenu styling */
+
+.whiteText{
     -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 12px;
 }
 
+/* Specific submenu, if it is part of a context menu */
+.context-menu .label {
+    -fx-text-fill: black; /* Black text for right-click submenu items */
+}
+
+.context-menu .label:hover {
+    -fx-text-fill: white; /* Change text color on hover */
+}
 /* Modern styling for the equalizer */
 .dialog-pane {
     -fx-background-color: #34495e;

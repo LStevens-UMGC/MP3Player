@@ -31,9 +31,6 @@ This cross-platform application can run on any system with a compatible **Java R
 - 🎛️ **Equalizer**:
     - Fine-tune audio output with an intuitive equalizer interface.
 
-- 📁 **Drag-and-Drop Support**:
-    - Easily add MP3 files to your playlists by dragging and dropping them into the application.
-
 ---
 
 ## **Setup Instructions**
@@ -127,12 +124,6 @@ pom.xml                   # Maven configuration file for dependencies
 
 ---
 
-## **Configuration**
-The application can be configured using a `config.json` file (optional). Customizable settings include:
-- **Default Volume Level**: Specify the initial volume when the application starts.
-
----
-
 ## **Contribution Guide**
 We welcome contributions to the MP3 Player project! Please follow these guidelines:
 
@@ -161,4 +152,13 @@ We welcome contributions to the MP3 Player project! Please follow these guidelin
 ---
 
 ## **License**
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+### GNU General Public License v3.0
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For more information regarding this license, please refer to the LICENSE file within the project's root directory.

@@ -129,6 +129,7 @@ public class MusicPlayerController {
         preferences = Preferences.userNodeForPackage(MusicPlayerController.class);
         // Set up the columns to display song details
         songTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        VBox.setVgrow(playlistListView, Priority.ALWAYS);
         VBox.setVgrow(songTableView, Priority.ALWAYS);
         VBox.setVgrow(progressBar, Priority.ALWAYS);
         songNameColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -154,7 +155,7 @@ public class MusicPlayerController {
 				Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
 				if (selectedSong != null) {
 					playlistLabel.setText("");
-					songTitleLabel.setText("Viewing : " + selectedSong.getTitle());
+					songTitleLabel.setText(selectedSong.getTitle());
 					model.playSongFromHistory(selectedSong);
                     loadEqualzierWithoutDisplay();
                     Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause2.png")));
@@ -195,7 +196,7 @@ public class MusicPlayerController {
             if (event.getClickCount() == 2) {
                 String selectedPlaylistName = playlistListView.getSelectionModel().getSelectedItem();
                 currentPlaylist = selectedPlaylistName;
-                playlistLabel.setText("Viewing : " + selectedPlaylistName);
+//                playlistLabel.setText(selectedPlaylistName);
                 if (selectedPlaylistName != null) {
                     loadPlaylist(selectedPlaylistName);
                 }
@@ -466,7 +467,7 @@ public class MusicPlayerController {
     private void viewAllSongs() {
         currentPlaylist = "AllSongs";
         playlistLabel.setText("");
-        playlistLabel.setText("Viewing : All Songs");
+//        playlistLabel.setText("Viewing : All Songs");
         songTableView.setItems(model.getAllSongs());
 
     }
@@ -517,7 +518,7 @@ public class MusicPlayerController {
             songTableView.getSelectionModel().clearAndSelect(randomIndex);
         }
         playlistLabel.setText(""); // Setting song title display
-        songTitleLabel.setText("Viewing : " + nextSong.getTitle()); //setting song title display
+        songTitleLabel.setText(nextSong.getTitle()); //setting song title display
         model.handlePrevNext(nextSong);
         loadEqualzierWithoutDisplay();
         resetSetup();
@@ -547,7 +548,7 @@ public class MusicPlayerController {
             prevSong = songTableView.getSelectionModel().getSelectedItem();
         }
         playlistLabel.setText(""); // Setting song title display
-        songTitleLabel.setText("Viewing : " + prevSong.getTitle()); //setting song title display
+        songTitleLabel.setText(prevSong.getTitle()); //setting song title display
         model.handlePrevNext(prevSong);
         loadEqualzierWithoutDisplay();
         resetSetup();
@@ -638,7 +639,7 @@ public class MusicPlayerController {
     @FXML
     private void handleShowSongHistory() {
         songTableView.setItems(model.getSongHistory());
-        playlistLabel.setText("Viewing : Song History");
+//        playlistLabel.setText("Viewing : Song History");
     }
 
     /**

@@ -3,6 +3,7 @@ package group2.mp3player;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.Objects;
@@ -26,6 +27,7 @@ public class MusicPlayerApp extends Application {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/group2/mp3player/view/MusicPlayer.fxml"));
 		Scene scene = new Scene(loader.load());
 		scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm());
+		primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/play-button-green-icon.png"))));
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("MP3 Player");
 		primaryStage.show();

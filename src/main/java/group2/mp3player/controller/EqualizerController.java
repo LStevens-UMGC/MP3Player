@@ -41,8 +41,8 @@ public class EqualizerController {
             EqualizerBand band = equalizerModel.getBands().get(i); // Retrieve the band at the current index
 
             // Create a slider for adjusting the band's gain
-            Slider slider = new Slider(-24.0, 12.0, band.getGain()); // Initialize with current gain
-            slider.setShowTickLabels(true); // Show tick labels (e.g., "-24 dB", "0 dB", "12 dB")
+            Slider slider = new Slider(-15.0, 15.0, band.getGain()); // Initialize with current gain
+            slider.setShowTickLabels(true); // Show tick labels (e.g., "-15 dB", "0 dB", "15 dB")
             slider.setShowTickMarks(true); // Show tick marks for better visualization
             slider.setMajorTickUnit(6); // Major tick spacing (every 6 dB)
             slider.setBlockIncrement(1); // Adjust the slider in increments of 1 dB

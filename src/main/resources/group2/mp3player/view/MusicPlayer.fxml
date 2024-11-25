@@ -13,106 +13,102 @@
 >
     <!-- Menu bar -->
     <top>
-    <MenuBar>
-        <Menu text="File">
-            <MenuItem text="Add New Song" onAction="#handleOpen" style="-fx-text-fill: #2c3e50;" />
-            <MenuItem text="Add Songs from File" onAction="#handleMassOpen" style="-fx-text-fill: #2c3e50;"/>
-<!--            <MenuItem text="Save Song Data" onAction="#saveSongData" style="-fx-text-fill: #2c3e50;"/>-->
-            <MenuItem text="Clear Song Data" onAction="#handleClearSongHistory" style="-fx-text-fill: #2c3e50;" />
-            <SeparatorMenuItem />
-            <MenuItem text="Create Playlist" onAction="#handleCreatePlaylist" style="-fx-text-fill: #2c3e50;" />
-            <MenuItem text="Clear All Playlists" onAction="#handleClearAllPlayLists" style="-fx-text-fill: #2c3e50;" />
-        </Menu>
-        <Menu text="View">
-            <MenuItem text="Equalizer" onAction="#handleOpenEqualizer" style="-fx-text-fill: #2c3e50;"/>
-            <SeparatorMenuItem />
-            <MenuItem text="All Songs" onAction="#viewAllSongs" style="-fx-text-fill: #2c3e50;"/>
-            <MenuItem text="Song History" onAction="#handleShowSongHistory" style="-fx-text-fill: #2c3e50;"/>
-        </Menu>
-        <Menu text="Settings">
-            <MenuItem text="Reset Equalizer" onAction="#resetEqualizerSettings" style="-fx-text-fill: #2c3e50;"/>
-        </Menu>
-    </MenuBar>
+        <MenuBar>
+            <Menu text="File" style="-fx-text-fill: white;" styleClass="whiteText">
+                <MenuItem text="Add New Song" onAction="#handleOpen" styleClass="whiteText"/>
+                <MenuItem text="Add Songs from File" onAction="#handleMassOpen" styleClass="whiteText"/>
+                <MenuItem text="Clear Song Data" onAction="#handleClearSongHistory" styleClass="whiteText"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="Create Playlist" onAction="#handleCreatePlaylist" styleClass="whiteText"/>
+                <MenuItem text="Clear All Playlists" onAction="#handleClearAllPlayLists" styleClass="whiteText"/>
+            </Menu>
+            <Menu text="View" style="-fx-text-fill: white;" styleClass="whiteText">
+                <MenuItem text="Equalizer" onAction="#handleOpenEqualizer" styleClass="whiteText"/>
+                <SeparatorMenuItem/>
+                <MenuItem text="All Songs" onAction="#viewAllSongs" styleClass="whiteText"/>
+                <MenuItem text="Song History" onAction="#handleShowSongHistory" styleClass="whiteText"/>
+            </Menu>
+            <Menu text="Settings" style="-fx-text-fill: white;" styleClass="whiteText">
+                <MenuItem text="Reset Equalizer" onAction="#resetEqualizerSettings" styleClass="whiteText"/>
+            </Menu>
+        </MenuBar>
     </top>
     <!-- Main content layout -->
-        <!-- Playlist list view -->
-        <left>
+    <left>
         <VBox spacing="10" alignment="TOP_CENTER">
             <TextField fx:id="searchPlaylistField" promptText="Search playlists..."/>
             <ListView fx:id="playlistListView"/>
         </VBox>
-        </left>
-
-        <!-- Song list and progress -->
-        <center>
+    </left>
+    <center>
         <VBox prefWidth="550" spacing="10">
             <TextField fx:id="searchSongsField" promptText="Search songs..."/>
             <TableView fx:id="songTableView">
                 <columns>
-                    <TableColumn fx:id="songNameColumn" text="Name"/>
-                    <TableColumn fx:id="artistColumn" text="Artist"/>
-                    <TableColumn fx:id="albumColumn" text="Album"/>
-                    <TableColumn fx:id="yearColumn" text="Year"/>
+                    <TableColumn fx:id="songNameColumn" text="Name" styleClass="whiteText"/>
+                    <TableColumn fx:id="artistColumn" text="Artist" styleClass="whiteText"/>
+                    <TableColumn fx:id="albumColumn" text="Album" styleClass="whiteText"/>
+                    <TableColumn fx:id="yearColumn" text="Year" styleClass="whiteText"/>
                 </columns>
             </TableView>
-
         </VBox>
-        </center>
-
-            <!-- Controls -->
-        <bottom>
-            <VBox spacing="10">
-            <!-- Progress bar and controls -->
-                <Slider fx:id="progressBar" HBox.hgrow="ALWAYS"/>
+    </center>
+    <bottom>
+        <VBox spacing="10">
+            <Slider fx:id="progressBar" HBox.hgrow="ALWAYS"/>
             <HBox alignment="CENTER" spacing="5">
-                <Label fx:id="playlistLabel" text="Viewing: All Songs"/>
-                <Label fx:id="songTitleLabel" text="No song playing"/>
-                <Label fx:id="currentTimeLabel" text="0:00"/>
+                <Label fx:id="playlistLabel" text="" styleClass="whiteText"/>
+                <Label fx:id="songTitleLabel" text="No song playing" styleClass="whiteText"/>
+                <Label fx:id="currentTimeLabel" text="0:00" styleClass="whiteText"/>
             </HBox>
-            <HBox alignment="CENTER" spacing="8">
-                <!-- Previous Button with Icon -->
-                <Button fx:id="prevButton" onAction="#handlePreviousSong" maxWidth="10">
-                    <graphic>
-                        <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
-                            <Image url="@icons/previous.png"/>
-                        </ImageView>
-                    </graphic>
-                </Button>
+            <HBox spacing="8">
+                <!-- Left Spacer -->
+                <Region HBox.hgrow="ALWAYS" />
 
-                <!-- Play/Pause Button with Icon -->
-                <Button fx:id="playPauseButton" onAction="#handlePlayPause">
-                    <graphic>
-                        <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
-                            <Image url="@icons/play.png"/>
-                        </ImageView>
-                    </graphic>
-                </Button>
+                <!-- Centered Controls -->
+                <HBox alignment="CENTER" spacing="8">
+                    <Button fx:id="prevButton" onAction="#handlePreviousSong" maxWidth="10">
+                        <graphic>
+                            <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
+                                <Image url="@icons/previous.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="playPauseButton" onAction="#handlePlayPause">
+                        <graphic>
+                            <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
+                                <Image url="@icons/play.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="nextButton" onAction="#handleNextSong">
+                        <graphic>
+                            <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
+                                <Image url="@icons/next.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
 
-                <!-- Next Button with Icon -->
-                <Button fx:id="nextButton" onAction="#handleNextSong">
-                    <graphic>
-                        <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
-                            <Image url="@icons/next.png"/>
-                        </ImageView>
-                    </graphic>
-                </Button>
+                <!-- Right Spacer -->
+                <Region HBox.hgrow="ALWAYS" />
 
-                <!-- Randomize Button -->
-                <Button fx:id="randomizeButton" onAction="#toggleRandomize">
-                <graphic>
-                    <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
-                        <Image url="@icons/repeat.png"/>
+                <!-- Right-aligned Controls -->
+                <HBox alignment="CENTER" spacing="8">
+                    <Button fx:id="randomizeButton" onAction="#toggleRandomize">
+                        <graphic>
+                            <ImageView fitWidth="25" fitHeight="25" preserveRatio="true">
+                                <Image url="@icons/repeat.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Slider fx:id="volumeSlider"/>
+                    <ImageView fx:id="speakerIcon" fitWidth="25" fitHeight="25" preserveRatio="true">
+                        <Image url="@icons/speaker.png"/>
                     </ImageView>
-                </graphic>
-                </Button>
-
-                <!-- Volume Control -->
-                <Slider fx:id="volumeSlider"/>
-                <ImageView fx:id="speakerIcon" fitWidth="25" fitHeight="25" preserveRatio="true">
-                    <Image url="@icons/speaker.png"/>
-                </ImageView>
-                <Label fx:id="volumePercentageLabel" text="100%"/>
+                    <Label fx:id="volumePercentageLabel" text="100%" styleClass="whiteText"/>
+                </HBox>
             </HBox>
-            </VBox>
-        </bottom>
+        </VBox>
+    </bottom>
 </BorderPane>
