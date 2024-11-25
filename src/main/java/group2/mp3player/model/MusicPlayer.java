@@ -261,20 +261,20 @@ public class MusicPlayer {
 				mediaPlayer.play();
 
 				// Update Play/Pause Icon to Pause
-				Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause.png")));
+				Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause2.png")));
 				((ImageView) playPauseButton.getGraphic()).setImage(pauseIcon);
 			}
 		} else if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
 			mediaPlayer.pause();
 
 			// Update Play/Pause Icon to Play
-			Image playIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/play.png")));
+			Image playIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/play2.png")));
 			((ImageView) playPauseButton.getGraphic()).setImage(playIcon);
 		} else {
 			mediaPlayer.play();
 
 			// Update Play/Pause Icon to Pause
-			Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause.png")));
+			Image pauseIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/pause2.png")));
 			((ImageView) playPauseButton.getGraphic()).setImage(pauseIcon);
 		}
 	}
@@ -406,9 +406,7 @@ public class MusicPlayer {
 	 * in the list or a random selection.
 	 */
 	public void toggleRandomize() {
-//		System.out.println("Before toggle: " + randomToggle);
 		randomToggle = !randomToggle;
-//		System.out.println("After toggle: " + randomToggle);
 	}
 
 }
