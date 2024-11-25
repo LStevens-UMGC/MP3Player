@@ -1,0 +1,5 @@
+module:group2.mp3player
+group2.mp3player
+group2.mp3player.controller
+group2.mp3player.model
+group2.mp3player.utils
