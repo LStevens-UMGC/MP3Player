@@ -1,10 +1,10 @@
 package group2.mp3player.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a playlist that contains a collection of songs. The playlist has a

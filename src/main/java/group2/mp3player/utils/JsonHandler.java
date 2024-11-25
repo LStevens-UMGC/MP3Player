@@ -1,17 +1,16 @@
 package group2.mp3player.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import group2.mp3player.model.Playlist;
+import group2.mp3player.model.Song;
+import javafx.collections.ObservableList;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import group2.mp3player.model.Playlist;
-import group2.mp3player.model.Song;
-import javafx.collections.ObservableList;
 
 /**
  * JsonHandler provides methods to save and load songs and playlists to and from JSON files.

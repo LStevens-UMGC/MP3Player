@@ -13,19 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -39,11 +27,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.prefs.Preferences;
 
 
@@ -130,21 +114,21 @@ public class MusicPlayerController {
     private Label volumePercentageLabel;
 
     /**
-     * Initializes the MusicPlayerController, setting up various UI components and event handlers.
-     * <p>
-     * This method is automatically called when the FXML file is loaded.
-     * It sets up the song table view, playlist list view, event handlers, and initializes the model.
-     * <p>
-     * It performs the following actions:
-     * - Sets up cell value factories for the song table columns.
-     * - Sets the items of the songTableView to all songs from the model.
-     * - Initializes the model, setting up labels and progress bar.
-     * - Sets up an event handler for double-clicking on a song in the songTableView to play it.
-     * - Sets up the playlistListView with an empty observable array list and a cell factory.
-     * - Loads playlists from a specified file and populates the playlistListView.
-     * - Sets up an event handler for double-clicking on a playlist in the playlistListView to load it.
-     * - Adds listeners to the search fields to filter the displayed songs and playlists based on user input.
-     * - Sets up the progress bar seek handler, volume bar handler, and auto-play handler.
+     * Initializes the music player controller, setting up the necessary
+     * elements and listeners for the user interface.
+     *
+     * It configures the TableView columns and playlist ListView,
+     * initializes the model, and sets up event handlers for interacting
+     * with the UI elements.
+     *
+     * - Configures columns to display song details such as title, artist, album, and year.
+     * - Sets up context menu for adding and removing songs from playlists.
+     * - Handles double-click events on songs to play them.
+     * - Sets up the playlist ListView and loads playlists from a file.
+     * - Adds listeners for search fields to filter playlists and songs.
+     * - Loads previously saved volume settings and initializes UI elements
+     *   such as volume slider and progress bar.
+     * - Sets up various image icons for control buttons.
      */
     @FXML
     public void initialize() {
@@ -279,9 +263,19 @@ public class MusicPlayerController {
         return preferences.getDouble("volume", 100.0); // Default to 100% if no value is saved
     }
 
-    /*
-     * On receiving a close request from the primary stage, will save allSongs,
-     * songHistory, and playlists.
+    /**
+     * Saves the current song data to JSON files. This includes all songs, song history, and playlists.
+     *
+     * This method is typically invoked when a close request is received from the primary stage.
+     * It ensures that the application state related to songs is persisted, allowing for data
+     * recovery in future sessions.
+     *
+     * The following data is saved:
+     * - All songs
+     * - Song history
+     * - Playlists
+     *
+     * The data is saved to predefined JSON files.
      */
     @FXML
     private void saveSongData() {
@@ -325,9 +319,16 @@ public class MusicPlayerController {
 	}
 
 	/**
-	 * Removes the selected item from the playlist, works the same way the add
-	 * function does. Reloads the playlist.
-	 */
+     * Handles the removal of a selected song from a specified playlist.
+     *
+     * This method first checks if a song and a playlist are selected. If the selected playlist is "AllSongs",
+     * the song is removed from the collection of all songs, and the view is updated accordingly. If the selected
+     * playlist is a user-defined playlist, it identifies the playlist, removes the song from it, saves the updated
+     * playlist data to a JSON file, and reloads the playlist.
+     *
+     * The method prints appropriate messages to the console if the operation is successful or if any issues arise
+     * (such as no song or playlist being selected, or the specified playlist not being found).
+     */
 	private void handleRemoveSongFromPlaylist() {
 		Song selectedSong = songTableView.getSelectionModel().getSelectedItem();
 		String selectedPlaylistName = currentPlaylist;//playlistListView.getSelectionModel().getSelectedItem();
@@ -441,15 +442,20 @@ public class MusicPlayerController {
     }
 
     /**
-     * Adds a song to the observable list of all songs and saves the updated list to a JSON file.
+     * Adds a song to the list of all songs in the model and saves the updated list to a JSON file.
      *
-     * @param song the song to be added to the all songs list.
+     * @param song the Song object to be added to the list of all songs
      */
     private void addToAllSongs(Song song) {
         model.getAllSongs().add(song);
         JsonHandler.saveToJson(model.getAllSongs(), model.getAllSongsFile());
     }
 
+    /**
+     * Removes a specified song from the list of all songs and updates the storage.
+     *
+     * @param song the Song object to be removed from the list
+     */
     private void removeSongFromAll(Song song) {
         model.getAllSongs().remove(song);
         JsonHandler.saveToJson(model.getAllSongs(), model.getAllSongsFile());
@@ -641,6 +647,16 @@ public class MusicPlayerController {
         playlistLabel.setText("Viewing : Song History");
     }
 
+    /**
+     * Handles the opening of the Equalizer window.
+     *
+     * This method loads the Equalizer FXML layout and initializes the EqualizerController with the current
+     * media player. If previously saved equalizer settings are available, they are restored. The method
+     * also sets up an event handler to save equalizer settings when the Equalizer window is closed.
+     *
+     * In case of exceptions during the loading or initialization of the Equalizer window,
+     * an error message is printed to the console.
+     */
     @FXML
     private void handleOpenEqualizer() {
         try {
@@ -674,6 +690,13 @@ public class MusicPlayerController {
         }
     }
 
+    /**
+     * Loads the equalizer without displaying its UI.
+     *
+     * This method initializes the equalizer by loading its FXML file, setting the
+     * media player to the controller, and restoring any saved equalizer settings.
+     * In case of any exceptions during loading, the error is printed to the stack trace.
+     */
     private void loadEqualzierWithoutDisplay(){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/group2/mp3player/view/Equalizer.fxml"));
@@ -693,12 +716,23 @@ public class MusicPlayerController {
         }
     }
 
-    // Save settings to Preferences
+    /**
+     * Saves the equalizer gain settings to the user's preferences.
+     *
+     * @param gainValues an array of gain values for the equalizer bands
+     */
     private void saveEqualizerSettings(double[] gainValues) {
         Preferences prefs = Preferences.userNodeForPackage(this.getClass());
         prefs.put("equalizerGains", Arrays.toString(gainValues)); // Save as a comma-separated string
     }
 
+    /**
+     * Resets the equalizer settings to their default values.
+     *
+     * This method initializes an array of double values representing the
+     * gain for each of the 10 equalizer bands to zero. It then saves these
+     * settings and reloads the equalizer without updating the display.
+     */
     public void resetEqualizerSettings() {
         double[] gainValues = new double[10];
         Arrays.fill(gainValues, 0.0);
@@ -706,7 +740,13 @@ public class MusicPlayerController {
         loadEqualzierWithoutDisplay();
     }
 
-    // Load settings from Preferences
+    /**
+     * Loads equalizer settings from user preferences. The settings are stored as a
+     * comma-separated string of gain values associated with the "equalizerGains" key.
+     *
+     * @return a double array of equalizer gains if settings are found and parsed
+     * successfully, or null if no settings are found or an error occurs.
+     */
     private double[] loadEqualizerSettings() {
         Preferences prefs = Preferences.userNodeForPackage(this.getClass());
         String gainsString = prefs.get("equalizerGains", null); // Retrieve the stored string
@@ -742,10 +782,22 @@ public class MusicPlayerController {
         });
     }
 
+    /**
+     * Updates the volume percentage label with the given volume as a percentage.
+     *
+     * @param volume the volume level to be displayed as a percentage
+     */
     private void updateVolumePercentageLabel(double volume) {
         volumePercentageLabel.setText(String.format("%.0f%%", volume));
     }
 
+    /**
+     * Initializes the seek handler for the progress bar.
+     *
+     * This method sets up an event handler for the progress bar that responds to mouse
+     * press and drag events. When triggered, the handler seeks the media player to
+     * a position corresponding to the value of the progress bar.
+     */
     private void setupProgressBarSeekHandler() {
         EventHandler<MouseEvent> seekHandler = event -> {
             if (model.getMediaPlayer() != null) {
@@ -757,7 +809,11 @@ public class MusicPlayerController {
         progressBar.setOnMouseDragged(seekHandler);
     }
 
-    // Load songs from a selected playlist
+    /**
+     * Loads songs from the selected playlist into the main playlist.
+     *
+     * @param playlistName the name of the playlist to load
+     */
     private void loadPlaylist(String playlistName) {
 
         List<Song> loadedSongs = model.loadPlaylist(playlistName);
@@ -778,19 +834,6 @@ public class MusicPlayerController {
      *                     If null or empty, all playlists will be displayed.
      */
     private void searchPlaylistByName(String playlistName) {
-//		List<String> playlistNames = new ArrayList<>();
-//		if(playlistName == null || playlistName.isEmpty()) {
-//
-//			for(Playlist playlist : playlists) {
-//				playlistNames.add(playlist.getName());
-//			}
-//		}else {
-//			for (Playlist playlist : playlists) {
-//				if (playlist.getName().toLowerCase().contains(playlistName.toLowerCase())) {
-//					playlistNames.add(playlist.getName());
-//				}
-//			}
-//		}
         playlistListView.setItems(FXCollections.observableArrayList(model.searchPlaylistByName(playlistName)));
     }
 
@@ -904,6 +947,14 @@ public class MusicPlayerController {
         }
     }
 
+    /**
+     * Toggles the randomization state in the model and updates the UI icon accordingly.
+     *
+     * The method checks the current randomization status from the model and sets the
+     * appropriate icon on the randomizeButton based on the status. If randomization is
+     * turned off, it sets the icon to "repeat.png". If randomization is turned on, it
+     * sets the icon to "shuffle.png".
+     */
     public void toggleRandomize() {
         model.toggleRandomize();
         if(model.getRandomStatus() == false){

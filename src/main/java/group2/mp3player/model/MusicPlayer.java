@@ -1,20 +1,20 @@
 package group2.mp3player.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import group2.mp3player.utils.JsonHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 /**

@@ -1,14 +1,11 @@
 package group2.mp3player.model;
 
-import group2.mp3player.model.Playlist;
-import group2.mp3player.model.Song;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 

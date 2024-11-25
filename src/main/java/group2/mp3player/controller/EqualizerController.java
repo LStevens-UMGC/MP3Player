@@ -9,6 +9,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.EqualizerBand;
 import javafx.scene.media.MediaPlayer;
 
+
+/**
+ * Controller class for managing an audio equalizer user interface.
+ * This class provides a dynamic UI for manipulating equalizer settings
+ * and applies those settings to a given MediaPlayer instance.
+ */
 public class EqualizerController {
 
     @FXML
@@ -17,6 +23,14 @@ public class EqualizerController {
     private Equalizer equalizerModel; // Model containing the equalizer bands and their settings
     private MediaPlayer mediaPlayer; // The MediaPlayer instance to which this equalizer applies
 
+    /**
+     * Initializes the equalizer interface by creating sliders and labels for each frequency band.
+     * This method sets up UI components to adjust and display the gain values for each band.
+     * It creates vertical sliders for each band, configures their properties, and binds
+     * their values bidirectionally to the corresponding band's gain property.
+     * Additionally, it creates and styles labels to display each band's center frequency.
+     * The sliders and labels are then added to the main equalizer container.
+     */
     @FXML
     public void initialize() {
         // Initialize the equalizer model
@@ -57,9 +71,16 @@ public class EqualizerController {
 
 
     /**
-     * Sets the MediaPlayer instance for this controller and applies the equalizer settings to it.
+     * Sets the MediaPlayer for the EqualizerController.
+     * This method updates the MediaPlayer instance and configures its audio equalizer
+     * with the current settings from the equalizer model.
      *
-     * @param mediaPlayer The MediaPlayer instance to which the equalizer will be applied.
+     * If the provided MediaPlayer is not null, the method applies the equalizer bands to
+     * the MediaPlayer's audio equalizer and enables the equalizer.
+     * If the provided MediaPlayer is null, it logs a message indicating that the
+     * MediaPlayer is not initialized.
+     *
+     * @param mediaPlayer the MediaPlayer to be associated with this controller.
      */
     public void setMediaPlayer(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
