@@ -32,7 +32,7 @@ public class MusicPlayerApp extends Application {
 	}
 
 	/**
-	 * The main method serves as the entry point for the MP3 Player JavaFX application.
+ * The main method serves as the entry point for the MP3 Player JavaFX application.
 	 * It launches the JavaFX application by calling the launch method with the provided
 	 * command-line arguments.
 	 *

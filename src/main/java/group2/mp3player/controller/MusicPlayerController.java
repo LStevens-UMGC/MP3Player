@@ -49,7 +49,7 @@ public class MusicPlayerController {
     @FXML
     private ListView<String> playlistListView;
 
-    private List<Song> mainPlaylist = new ArrayList<>();
+    private final List<Song> mainPlaylist = new ArrayList<>();
     @FXML
     private TableView<Song> songTableView;
 
@@ -84,9 +84,6 @@ public class MusicPlayerController {
     private Button playPauseButton;
 
     @FXML
-    private Button showHistoryButton;
-
-    @FXML
     private Button nextButton;
 
     @FXML
@@ -94,9 +91,6 @@ public class MusicPlayerController {
 
     @FXML
     private Button randomizeButton;
-
-    @FXML
-    private Button clearPlaylistButton;
 
     @FXML
     private TextField searchPlaylistField;
@@ -957,7 +951,7 @@ public class MusicPlayerController {
      */
     public void toggleRandomize() {
         model.toggleRandomize();
-        if(model.getRandomStatus() == false){
+        if(!model.getRandomStatus()){
             Image shuffleIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icons/repeat.png")));
             ((ImageView) randomizeButton.getGraphic()).setImage(shuffleIcon);
         }

@@ -18,7 +18,7 @@ public class Song {
      *
      * This constructor initializes a new Song object without setting any of its properties.
      */
-    public Song(){};
+    public Song(){}
 
     /**
      * Constructs a Song instance with specified details.
